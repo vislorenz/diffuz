@@ -213,7 +213,10 @@
         <div class="chan-pill on" data-chan="facebook"><span class="dot"></span>Facebook</div>
         <div class="chan-pill on" data-chan="instagram"><span class="dot"></span>Instagram</div>
         <div class="chan-pill on" data-chan="site"><span class="dot"></span>Site internet</div>
-        <div class="chan-pill on" id="pageNameChip" title="Nom de votre page, réglé une fois — pas relu à chaque annonce">✏️ <span id="pageNameLabel">Garage Martin</span></div>
+        <div class="chan-pill on" id="pageNameChip" title="Nom de votre page, réglé une fois — pas relu à chaque annonce">
+          ✏️ <span id="pageNameLabel">Garage Martin</span>
+          <input id="pageNameInput" type="text" hidden style="border:none;background:transparent;font:inherit;color:inherit;width:110px;padding:0;outline:none;">
+        </div>
       </div>
     </div>
     <h1 class="display">Déposez, vérifiez, c'est diffusé.</h1>
@@ -403,14 +406,35 @@
     }catch(e){}
   }
 
-  el('pageNameChip').addEventListener('click', function(){
-    var next = prompt("Nom de votre page (utilisé dans les aperçus Facebook/Instagram) :", state.pageName);
-    if(next && next.trim()){
-      state.pageName = next.trim();
+  function startEditPageName(){
+    var label = el('pageNameLabel'), input = el('pageNameInput');
+    input.value = state.pageName;
+    label.hidden = true;
+    input.hidden = false;
+    input.focus();
+    input.select();
+  }
+
+  function commitPageName(save){
+    var label = el('pageNameLabel'), input = el('pageNameInput');
+    if(save && input.value.trim()){
+      state.pageName = input.value.trim();
       try{ localStorage.setItem('diffuz_page_name', state.pageName); }catch(e){}
       applyPageName();
     }
+    input.hidden = true;
+    label.hidden = false;
+  }
+
+  el('pageNameChip').addEventListener('click', function(e){
+    if(e.target.id !== 'pageNameInput') startEditPageName();
   });
+  el('pageNameInput').addEventListener('click', function(e){ e.stopPropagation(); });
+  el('pageNameInput').addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ commitPageName(true); }
+    if(e.key === 'Escape'){ commitPageName(false); }
+  });
+  el('pageNameInput').addEventListener('blur', function(){ commitPageName(true); });
 
   var dropzone = el('dropzone'), fileInput = el('fileInput');
   var stepDrop = el('stepDrop'), stepAnalyze = el('stepAnalyze'), stepReview = el('stepReview'), stepSuccess = el('stepSuccess');
