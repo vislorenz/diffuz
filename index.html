@@ -213,6 +213,7 @@
         <div class="chan-pill on" data-chan="facebook"><span class="dot"></span>Facebook</div>
         <div class="chan-pill on" data-chan="instagram"><span class="dot"></span>Instagram</div>
         <div class="chan-pill on" data-chan="site"><span class="dot"></span>Site internet</div>
+        <div class="chan-pill on" id="pageNameChip" title="Nom de votre page, réglé une fois — pas relu à chaque annonce">✏️ <span id="pageNameLabel">Garage Martin</span></div>
       </div>
     </div>
     <h1 class="display">Déposez, vérifiez, c'est diffusé.</h1>
@@ -298,9 +299,9 @@
             <div class="preview-frame" id="prevFacebook">
               <div class="fb-card">
                 <div class="fb-head">
-                  <div class="fb-avatar">GM</div>
+                  <div class="fb-avatar" id="fbAvatar">GM</div>
                   <div>
-                    <div class="fb-name">Garage Martin</div>
+                    <div class="fb-name" id="fbName">Garage Martin</div>
                     <div class="fb-time">à l'instant · 🌐</div>
                   </div>
                 </div>
@@ -312,7 +313,7 @@
 
             <div class="preview-frame" id="prevInstagram" hidden>
               <div class="ig-card">
-                <div class="ig-head"><div class="ig-avatar"></div><div class="ig-name">garage.martin</div></div>
+                <div class="ig-head"><div class="ig-avatar"></div><div class="ig-name" id="igName">garage.martin</div></div>
                 <img class="ig-img" id="igImg" alt="Photo du véhicule">
                 <div class="ig-caption" id="igCaption"></div>
               </div>
@@ -374,10 +375,42 @@
     urls: [],
     pdf: null,
     current: null,
-    channels: {facebook:true, instagram:true, site:true}
+    channels: {facebook:true, instagram:true, site:true},
+    pageName: 'Garage Martin'
   };
 
   var el = function(id){ return document.getElementById(id); };
+
+  function initials(name){
+    var parts = name.trim().split(/\s+/).filter(Boolean);
+    var a = (parts[0] || '?').charAt(0);
+    var b = (parts[1] || '').charAt(0);
+    return (a + b).toUpperCase();
+  }
+
+  function applyPageName(){
+    el('pageNameLabel').textContent = state.pageName;
+    el('fbName').textContent = state.pageName;
+    el('igName').textContent = igHandle(state.pageName);
+    el('fbAvatar').textContent = initials(state.pageName);
+    updatePreviews();
+  }
+
+  function loadPageName(){
+    try{
+      var saved = localStorage.getItem('diffuz_page_name');
+      if(saved) state.pageName = saved;
+    }catch(e){}
+  }
+
+  el('pageNameChip').addEventListener('click', function(){
+    var next = prompt("Nom de votre page (utilisé dans les aperçus Facebook/Instagram) :", state.pageName);
+    if(next && next.trim()){
+      state.pageName = next.trim();
+      try{ localStorage.setItem('diffuz_page_name', state.pageName); }catch(e){}
+      applyPageName();
+    }
+  });
 
   var dropzone = el('dropzone'), fileInput = el('fileInput');
   var stepDrop = el('stepDrop'), stepAnalyze = el('stepAnalyze'), stepReview = el('stepReview'), stepSuccess = el('stepSuccess');
@@ -436,7 +469,7 @@
     var buf = await file.arrayBuffer();
     var pdf = await pdfjsLib.getDocument({data: buf}).promise;
     var out = [];
-    var pageCount = Math.min(pdf.numPages, 3);
+    var pageCount = Math.min(pdf.numPages, 8);
     for(var n = 1; n <= pageCount; n++){
       var page = await pdf.getPage(n);
       var content = await page.getTextContent();
@@ -568,15 +601,21 @@
     return state.urls[0] || '';
   }
 
+  function igHandle(name){
+    return name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '.').replace(/^\.+|\.+$/g, '') || 'votregarage';
+  }
+
   function updatePreviews(){
     var title = el('fTitle').value, price = el('fPrice').value, km = el('fKm').value, desc = el('fDesc').value;
     var img = heroImageSrc();
+    var pageName = state.pageName || 'Garage Martin';
+    var handle = igHandle(pageName);
 
     el('fbText').textContent = title + ' — ' + price + '\n' + km + '\n\n' + desc;
     if(img){ el('fbImg').src = img; el('fbImg').style.display='block'; } else { el('fbImg').style.display='none'; }
 
     var tag = title.split(' ')[0];
-    el('igCaption').innerHTML = '<b>garage.martin</b> ' + title + ' · ' + price + '<br>' + desc + '<br><span class="ig-tags">#' + tag + ' #occasion #garagemartin</span>';
+    el('igCaption').innerHTML = '<b>' + handle + '</b> ' + title + ' · ' + price + '<br>' + desc + '<br><span class="ig-tags">#' + tag + ' #occasion #' + handle.replace(/\./g,'') + '</span>';
     if(img){ el('igImg').src = img; el('igImg').style.display='block'; } else { el('igImg').style.display='none'; }
 
     el('siteTitle').textContent = title;
@@ -689,6 +728,8 @@
     });
   }
 
+  loadPageName();
+  applyPageName();
   renderHistory();
   setStep(1);
 })();
