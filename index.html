@@ -517,7 +517,7 @@
         "Voici le texte brut extrait d'une page imprimée d'une annonce de véhicule d'occasion issue d'AutoScout24 " +
         "(le texte peut contenir des éléments de mise en page sans rapport, ignore-les). " +
         "Renvoie UNIQUEMENT un objet JSON avec exactement ces clés : " +
-        '{"title": "marque et modèle du véhicule", "price": "prix avec le symbole €", "km": "kilométrage avec l\'unité km", "desc": "la description du véhicule (état, équipements, caractéristiques techniques propres à CE véhicule) reprise TEXTUELLEMENT et INTÉGRALEMENT telle qu\'écrite dans l\'annonce, sans la raccourcir, la résumer ni la reformuler. Exclure en revanche les mentions génériques du vendeur qui ne sont pas propres à ce véhicule : horaires d\'ouverture, coordonnées de contact, mentions légales/avertissements, conditions de rendez-vous, avertissement sur le financement"}. ' +
+        '{"title": "marque et modèle du véhicule", "price": "prix avec le symbole €", "km": "kilométrage avec l\'unité km", "desc": "la description du véhicule (état, équipements, caractéristiques techniques propres à CE véhicule), avec le même contenu et les mêmes mots que l\'annonce (sans rien raccourcir, résumer ni reformuler), mais MISE EN FORME pour être agréable à lire : phrases générales normales, puis chaque équipement/caractéristique technique/option sur SA PROPRE LIGNE (utilise \\n entre chaque ligne, un tiret \"- \" au début de chaque option). Exclure les mentions génériques du vendeur qui ne sont pas propres à ce véhicule : horaires d\'ouverture, coordonnées de contact, mentions légales/avertissements, conditions de rendez-vous, avertissement sur le financement"}. ' +
         "Si une information est introuvable dans le texte, mets une chaîne vide pour ce champ.\n\n" +
         "Texte extrait :\n" + text.slice(0, 6000),
         { modelTier: "default", cache: false }
@@ -629,6 +629,13 @@
     return name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '.').replace(/^\.+|\.+$/g, '') || 'votregarage';
   }
 
+  function escapeHtml(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function nl2br(s){
+    return escapeHtml(s).replace(/\n/g, '<br>');
+  }
+
   function updatePreviews(){
     var title = el('fTitle').value, price = el('fPrice').value, km = el('fKm').value, desc = el('fDesc').value;
     var img = heroImageSrc();
@@ -639,7 +646,7 @@
     if(img){ el('fbImg').src = img; el('fbImg').style.display='block'; } else { el('fbImg').style.display='none'; }
 
     var tag = title.split(' ')[0];
-    el('igCaption').innerHTML = '<b>' + handle + '</b> ' + title + ' · ' + price + '<br>' + desc + '<br><span class="ig-tags">#' + tag + ' #occasion #' + handle.replace(/\./g,'') + '</span>';
+    el('igCaption').innerHTML = '<b>' + escapeHtml(handle) + '</b> ' + escapeHtml(title) + ' · ' + escapeHtml(price) + '<br>' + nl2br(desc) + '<br><span class="ig-tags">#' + escapeHtml(tag) + ' #occasion #' + escapeHtml(handle.replace(/\./g,'')) + '</span>';
     if(img){ el('igImg').src = img; el('igImg').style.display='block'; } else { el('igImg').style.display='none'; }
 
     el('siteTitle').textContent = title;
