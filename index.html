@@ -116,7 +116,7 @@
   .field label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint);}
   .field input, .field textarea{font-family:var(--font-body);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;background:var(--surface);color:var(--ink);}
   .field input:focus-visible, .field textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
-  .field textarea{resize:vertical;min-height:74px;line-height:1.5;}
+  .field textarea{resize:vertical;min-height:120px;line-height:1.5;}
   .row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 
   .thumbs{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;}
@@ -517,7 +517,7 @@
         "Voici le texte brut extrait d'une page imprimée d'une annonce de véhicule d'occasion issue d'AutoScout24 " +
         "(le texte peut contenir des éléments de mise en page sans rapport, ignore-les). " +
         "Renvoie UNIQUEMENT un objet JSON avec exactement ces clés : " +
-        '{"title": "marque et modèle du véhicule", "price": "prix avec le symbole €", "km": "kilométrage avec l\'unité km", "desc": "description courte du véhicule en une ou deux phrases, à partir du texte de l\'annonce"}. ' +
+        '{"title": "marque et modèle du véhicule", "price": "prix avec le symbole €", "km": "kilométrage avec l\'unité km", "desc": "la description du véhicule reprise TEXTUELLEMENT et INTÉGRALEMENT telle qu\'écrite dans l\'annonce, sans la raccourcir, la résumer ni la reformuler"}. ' +
         "Si une information est introuvable dans le texte, mets une chaîne vide pour ce champ.\n\n" +
         "Texte extrait :\n" + text.slice(0, 6000),
         { modelTier: "default", cache: false }
