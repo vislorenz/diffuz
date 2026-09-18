@@ -432,16 +432,18 @@
 
   function wait(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
 
-  async function renderPdfFirstPageToBlob(file){
+  async function extractPdfText(file){
     var buf = await file.arrayBuffer();
     var pdf = await pdfjsLib.getDocument({data: buf}).promise;
-    var page = await pdf.getPage(1);
-    var viewport = page.getViewport({scale: 1.6});
-    var canvas = document.createElement('canvas');
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
-    await page.render({canvasContext: canvas.getContext('2d'), viewport: viewport}).promise;
-    return new Promise(function(resolve){ canvas.toBlob(resolve, 'image/png'); });
+    var out = [];
+    var pageCount = Math.min(pdf.numPages, 3);
+    for(var n = 1; n <= pageCount; n++){
+      var page = await pdf.getPage(n);
+      var content = await page.getTextContent();
+      var line = content.items.map(function(it){ return it.str; }).join(' ');
+      out.push(line);
+    }
+    return out.join('\n').replace(/\s+/g, ' ').trim();
   }
 
   async function extractFromPdf(){
@@ -449,17 +451,19 @@
     if(!window.claude || !window.claude.use) return { ok:false, reason:'no_runtime' };
     var sample = await window.claude.use('sample').catch(function(e){ console.error('Diffuz: use(sample) failed', e); return null; });
     if(!sample) return { ok:false, reason:'capability_unavailable' };
-    var limits = await sample.limits().catch(function(e){ console.error('Diffuz: sample.limits() failed', e); return null; });
-    if(!limits || !limits.images){ return { ok:false, reason:'images_unavailable', detail: limits }; }
-    var blob = await renderPdfFirstPageToBlob(state.pdf).catch(function(e){ console.error('Diffuz: PDF render failed', e); return null; });
-    if(!blob) return { ok:false, reason:'pdf_render_failed' };
+
+    var text = await extractPdfText(state.pdf).catch(function(e){ console.error('Diffuz: PDF text extraction failed', e); return ''; });
+    if(!text){ return { ok:false, reason:'pdf_no_text' }; }
+
     try{
       var data = await sample.json(
-        "Voici la capture d'une page imprimée (PDF) d'une annonce de véhicule d'occasion issue d'AutoScout24. " +
-        "Lis le texte visible sur l'image et renvoie UNIQUEMENT un objet JSON avec exactement ces clés : " +
+        "Voici le texte brut extrait d'une page imprimée d'une annonce de véhicule d'occasion issue d'AutoScout24 " +
+        "(le texte peut contenir des éléments de mise en page sans rapport, ignore-les). " +
+        "Renvoie UNIQUEMENT un objet JSON avec exactement ces clés : " +
         '{"title": "marque et modèle du véhicule", "price": "prix avec le symbole €", "km": "kilométrage avec l\'unité km", "desc": "description courte du véhicule en une ou deux phrases, à partir du texte de l\'annonce"}. ' +
-        "Si une information est introuvable sur l'image, mets une chaîne vide pour ce champ.",
-        { images: blob, modelTier: "default", cache: false }
+        "Si une information est introuvable dans le texte, mets une chaîne vide pour ce champ.\n\n" +
+        "Texte extrait :\n" + text.slice(0, 6000),
+        { modelTier: "default", cache: false }
       );
     }catch(e){
       console.error('Diffuz: sample.json() rejected', e);
@@ -507,6 +511,7 @@
     capability_unavailable: "fonction de lecture non accordée par ce navigateur",
     images_unavailable: "cette vue ne peut pas envoyer d'image à Claude",
     pdf_render_failed: "le PDF n'a pas pu être converti en image",
+    pdf_no_text: "aucun texte trouvé dans le PDF (page scannée sans texte sélectionnable ?)",
     not_granted: "autorisation refusée ou pas encore accordée",
     rate_limited: "trop de demandes, réessaie dans un instant",
     invalid_json: "réponse de Claude non exploitable",
