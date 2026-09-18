@@ -517,7 +517,7 @@
         "Voici le texte brut extrait d'une page imprimée d'une annonce de véhicule d'occasion issue d'AutoScout24 " +
         "(le texte peut contenir des éléments de mise en page sans rapport, ignore-les). " +
         "Renvoie UNIQUEMENT un objet JSON avec exactement ces clés : " +
-        '{"title": "marque et modèle du véhicule", "price": "prix avec le symbole €", "km": "kilométrage avec l\'unité km", "desc": "la description du véhicule reprise TEXTUELLEMENT et INTÉGRALEMENT telle qu\'écrite dans l\'annonce, sans la raccourcir, la résumer ni la reformuler"}. ' +
+        '{"title": "marque et modèle du véhicule", "price": "prix avec le symbole €", "km": "kilométrage avec l\'unité km", "desc": "la description du véhicule (état, équipements, caractéristiques techniques propres à CE véhicule) reprise TEXTUELLEMENT et INTÉGRALEMENT telle qu\'écrite dans l\'annonce, sans la raccourcir, la résumer ni la reformuler. Exclure en revanche les mentions génériques du vendeur qui ne sont pas propres à ce véhicule : horaires d\'ouverture, coordonnées de contact, mentions légales/avertissements, conditions de rendez-vous, avertissement sur le financement"}. ' +
         "Si une information est introuvable dans le texte, mets une chaîne vide pour ce champ.\n\n" +
         "Texte extrait :\n" + text.slice(0, 6000),
         { modelTier: "default", cache: false }
