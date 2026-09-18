@@ -380,8 +380,7 @@
     pdf: null,
     current: null,
     channels: {facebook:true, instagram:true, site:true},
-    pageName: 'Garage Martin',
-    photoLimitHit: false
+    pageName: 'Garage Martin'
   };
 
   var el = function(id){ return document.getElementById(id); };
@@ -494,7 +493,7 @@
   });
   fileInput.addEventListener('change', function(e){ handleFiles(e.target.files); });
 
-  var MAX_PHOTOS = 10; // limite réelle d'Instagram pour un post carrousel
+  var IG_PHOTO_LIMIT = 10; // limite réelle d'Instagram pour un post carrousel — n'est pas un plafond global, juste un avertissement
 
   function handleFiles(fileList){
     var all = Array.prototype.filter.call(fileList, function(f){
@@ -502,7 +501,7 @@
     });
     if(!all.length) return;
     state.pdf = all.filter(function(f){ return f.type==='application/pdf'; })[0] || null;
-    var photos = all.filter(function(f){ return f.type.indexOf('image/')===0; }).slice(0, MAX_PHOTOS);
+    var photos = all.filter(function(f){ return f.type.indexOf('image/')===0; });
     state.files = photos;
     try{
       state.urls = photos.map(function(f){ return URL.createObjectURL(f); });
@@ -659,25 +658,21 @@
       img.src = u;
       thumbRow.appendChild(img);
     });
-    if(state.urls.length < MAX_PHOTOS){
-      var addTile = document.createElement('div');
-      addTile.id = 'addPhotoTile';
-      addTile.title = 'Ajouter des photos (' + state.urls.length + '/' + MAX_PHOTOS + ')';
-      addTile.style.cssText = 'width:64px;height:64px;border-radius:10px;border:2px dashed var(--accent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;flex:none;cursor:pointer;background:var(--accent-soft);';
-      addTile.textContent = '+';
-      addTile.addEventListener('click', function(){ el('addPhotosInput').click(); });
-      thumbRow.appendChild(addTile);
-    }
+    var addTile = document.createElement('div');
+    addTile.id = 'addPhotoTile';
+    addTile.title = 'Ajouter des photos';
+    addTile.style.cssText = 'width:64px;height:64px;border-radius:10px;border:2px dashed var(--accent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;flex:none;cursor:pointer;background:var(--accent-soft);';
+    addTile.textContent = '+';
+    addTile.addEventListener('click', function(){ el('addPhotosInput').click(); });
+    thumbRow.appendChild(addTile);
 
     var limitNote = document.getElementById('photoLimitNote');
     if(limitNote) limitNote.remove();
-    if(state.urls.length >= MAX_PHOTOS || state.photoLimitHit){
+    if(state.urls.length > IG_PHOTO_LIMIT){
       var note = document.createElement('p');
       note.id = 'photoLimitNote';
-      note.style.cssText = 'font-size:12px;color:var(--ink-faint);margin:-6px 0 12px;';
-      note.textContent = state.urls.length >= MAX_PHOTOS
-        ? '10/10 photos — c\'est le maximum accepté par Instagram pour un post multi-photos.'
-        : 'Seules les 10 premières photos ont été gardées (limite Instagram pour un post multi-photos).';
+      note.style.cssText = 'font-size:12px;color:var(--accent-2);margin:-6px 0 12px;font-weight:600;';
+      note.textContent = '⚠️ ' + state.urls.length + ' photos ajoutées — seules les 10 premières seront publiées sur Instagram (limite de la plateforme). Le site internet peut les afficher toutes.';
       thumbRow.insertAdjacentElement('afterend', note);
     }
   }
@@ -685,9 +680,7 @@
   el('addPhotosInput').addEventListener('change', function(e){
     var newPhotos = Array.prototype.filter.call(e.target.files, function(f){ return f.type.indexOf('image/')===0; });
     if(!newPhotos.length) return;
-    var remaining = MAX_PHOTOS - state.urls.length;
-    state.photoLimitHit = newPhotos.length > remaining;
-    newPhotos.slice(0, Math.max(remaining, 0)).forEach(function(f){
+    newPhotos.forEach(function(f){
       state.files.push(f);
       try{ state.urls.push(URL.createObjectURL(f)); }catch(err){}
     });
