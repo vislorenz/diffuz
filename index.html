@@ -408,6 +408,31 @@
     }catch(e){}
   }
 
+  function refreshPageNameFromDb(){
+    if(!window.claude || !window.claude.use) return;
+    window.claude.use('db').then(function(db){
+      if(!db) return null;
+      return db.doc('settings/pageName').get();
+    }).then(function(snap){
+      if(snap && snap.exists){
+        var data = snap.data();
+        if(data && data.value){
+          state.pageName = data.value;
+          applyPageName();
+        }
+      }
+    }).catch(function(e){ console.warn('Diffuz: db load failed', e); });
+  }
+
+  function savePageName(name){
+    try{ localStorage.setItem('diffuz_page_name', name); }catch(e){}
+    if(!window.claude || !window.claude.use) return;
+    window.claude.use('db').then(function(db){
+      if(!db) return;
+      return db.doc('settings/pageName').set({ value: name });
+    }).catch(function(e){ console.warn('Diffuz: db save failed', e); });
+  }
+
   function startEditPageName(){
     var label = el('pageNameLabel'), input = el('pageNameInput');
     input.value = state.pageName;
@@ -421,7 +446,7 @@
     var label = el('pageNameLabel'), input = el('pageNameInput');
     if(save && input.value.trim()){
       state.pageName = input.value.trim();
-      try{ localStorage.setItem('diffuz_page_name', state.pageName); }catch(e){}
+      savePageName(state.pageName);
       applyPageName();
     }
     input.hidden = true;
@@ -779,6 +804,7 @@
 
   loadPageName();
   applyPageName();
+  refreshPageNameFromDb();
   renderHistory();
   setStep(1);
 })();
