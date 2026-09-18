@@ -1,6 +1,7 @@
 <title>Diffuz</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 <style>
   :root{
     --bg:#F4F7F5;
@@ -233,13 +234,13 @@
 
       <!-- STEP 1: dropzone -->
       <section id="stepDrop">
-        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Déposer la capture d'écran et les photos">
+        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Déposer le PDF de l'annonce et les photos">
           <span class="dz-icon">📥</span>
-          <h3>Déposez la capture d'écran + les photos ici</h3>
-          <p>Ou cliquez pour parcourir vos fichiers (image, plusieurs à la fois)</p>
+          <h3>Déposez le PDF imprimé de l'annonce + vos photos ici</h3>
+          <p>Sur la page de l'annonce : Ctrl+P (ou "Imprimer" depuis le menu Partager) → Enregistrer en PDF</p>
           <span class="dz-btn">Choisir des fichiers</span>
         </div>
-        <input type="file" id="fileInput" accept="image/*" multiple>
+        <input type="file" id="fileInput" accept="image/*,application/pdf" multiple>
       </section>
 
       <!-- STEP: analyzing -->
@@ -353,7 +354,7 @@
     <div class="hist-grid" id="histGrid"></div>
   </section>
 
-  <p class="disclaimer"><b>Prototype de test.</b> L'extraction des champs est simulée ici pour valider le parcours ; en production elle est réalisée par lecture vision de la capture d'écran (voir le cahier des charges, module de saisie).</p>
+  <p class="disclaimer"><b>Prototype de test.</b> Quand c'est possible (PDF déposé + autorisation Claude accordée dans ce navigateur), les champs sont réellement extraits par lecture automatique du PDF. Sinon, des données d'exemple illustrent le parcours (voir le cahier des charges, module de saisie).</p>
 
 </div>
 
@@ -370,6 +371,7 @@
   var state = {
     files: [],
     urls: [],
+    pdf: null,
     current: null,
     channels: {facebook:true, instagram:true, site:true}
   };
@@ -408,17 +410,64 @@
   fileInput.addEventListener('change', function(e){ handleFiles(e.target.files); });
 
   function handleFiles(fileList){
-    var files = Array.prototype.filter.call(fileList, function(f){ return f.type.indexOf('image/')===0; });
-    if(!files.length) return;
-    state.files = files;
+    var all = Array.prototype.filter.call(fileList, function(f){
+      return f.type.indexOf('image/')===0 || f.type==='application/pdf';
+    });
+    if(!all.length) return;
+    state.pdf = all.filter(function(f){ return f.type==='application/pdf'; })[0] || null;
+    var photos = all.filter(function(f){ return f.type.indexOf('image/')===0; });
+    state.files = photos;
     try{
-      state.urls = files.map(function(f){ return URL.createObjectURL(f); });
+      state.urls = photos.map(function(f){ return URL.createObjectURL(f); });
     }catch(e){ state.urls = []; }
     runAnalysis();
   }
 
-  var analyzeMsgs = ["Lecture de la capture d'écran…","Extraction du prix et du kilométrage…","Préparation des publications…"];
-  function runAnalysis(){
+  var analyzeMsgs = ["Lecture du PDF imprimé…","Extraction du prix et du kilométrage…","Préparation des publications…"];
+
+  if(typeof pdfjsLib !== 'undefined'){
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+  }
+
+  function wait(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+
+  async function renderPdfFirstPageToBlob(file){
+    var buf = await file.arrayBuffer();
+    var pdf = await pdfjsLib.getDocument({data: buf}).promise;
+    var page = await pdf.getPage(1);
+    var viewport = page.getViewport({scale: 1.6});
+    var canvas = document.createElement('canvas');
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    await page.render({canvasContext: canvas.getContext('2d'), viewport: viewport}).promise;
+    return new Promise(function(resolve){ canvas.toBlob(resolve, 'image/png'); });
+  }
+
+  async function extractFromPdf(){
+    if(!state.pdf || !window.claude || !window.claude.use) return null;
+    var sample = await window.claude.use('sample').catch(function(){ return null; });
+    if(!sample) return null;
+    var limits = await sample.limits().catch(function(){ return null; });
+    if(!limits || !limits.images) return null;
+    var blob = await renderPdfFirstPageToBlob(state.pdf).catch(function(){ return null; });
+    if(!blob) return null;
+    var data = await sample.json(
+      "Voici la capture d'une page imprimée (PDF) d'une annonce de véhicule d'occasion issue d'AutoScout24. " +
+      "Lis le texte visible sur l'image et renvoie UNIQUEMENT un objet JSON avec exactement ces clés : " +
+      '{"title": "marque et modèle du véhicule", "price": "prix avec le symbole €", "km": "kilométrage avec l\'unité km", "desc": "description courte du véhicule en une ou deux phrases, à partir du texte de l\'annonce"}. ' +
+      "Si une information est introuvable sur l'image, mets une chaîne vide pour ce champ.",
+      { images: blob, modelTier: "default", cache: false }
+    ).catch(function(){ return null; });
+    if(!data || (!data.title && !data.price && !data.km && !data.desc)) return null;
+    return {
+      title: String(data.title || ''),
+      price: String(data.price || ''),
+      km: String(data.km || ''),
+      desc: String(data.desc || '')
+    };
+  }
+
+  async function runAnalysis(){
     setStep(1.5);
     var msgEl = el('analyzeMsg');
     var i = 0;
@@ -426,28 +475,51 @@
     var t = setInterval(function(){
       i++;
       if(i < analyzeMsgs.length){ msgEl.textContent = analyzeMsgs[i]; }
-    }, 550);
-    setTimeout(function(){
-      clearInterval(t);
-      fillReview();
-      setStep(2);
-    }, 1750);
+    }, 700);
+
+    var results = await Promise.all([
+      extractFromPdf().catch(function(){ return null; }),
+      wait(1400)
+    ]);
+    var extracted = results[0];
+
+    clearInterval(t);
+    fillReview(extracted);
+    setStep(2);
   }
 
-  function fillReview(){
-    var s = samples[Math.floor(Math.random()*samples.length)];
+  function fillReview(extracted){
+    var s;
+    if(extracted){
+      var fallback = samples[0];
+      s = {
+        title: extracted.title || fallback.title,
+        price: extracted.price || fallback.price,
+        km: extracted.km || fallback.km,
+        desc: extracted.desc || fallback.desc,
+        emoji: '🚗'
+      };
+    } else {
+      s = samples[Math.floor(Math.random()*samples.length)];
+    }
     state.current = Object.assign({}, s);
 
     var thumbRow = el('thumbRow');
     thumbRow.innerHTML = '';
+    if(state.pdf){
+      var pdfBadge = document.createElement('div');
+      pdfBadge.style.cssText = 'width:64px;height:64px;border-radius:10px;border:1px solid var(--border);background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex:none;';
+      pdfBadge.textContent = 'PDF';
+      thumbRow.appendChild(pdfBadge);
+    }
     var urls = state.urls.length ? state.urls : [];
     urls.forEach(function(u){
       var img = document.createElement('img');
       img.src = u;
       thumbRow.appendChild(img);
     });
-    if(!urls.length){
-      thumbRow.innerHTML = '<div style="font-size:12px;color:var(--ink-faint);">Aucune photo détectée dans le dépôt — exemple ci-dessous.</div>';
+    if(!state.pdf && !urls.length){
+      thumbRow.innerHTML = '<div style="font-size:12px;color:var(--ink-faint);">Aucun fichier détecté dans le dépôt — exemple ci-dessous.</div>';
     }
 
     el('fTitle').value = s.title;
