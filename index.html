@@ -1,0 +1,589 @@
+<title>Diffuz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    --bg:#F4F7F5;
+    --surface:#FFFFFF;
+    --surface-alt:#EAF1EE;
+    --ink:#1C2B24;
+    --ink-soft:#5E7269;
+    --ink-faint:#8CA098;
+    --accent:#3E7C6A;
+    --accent-ink:#FFFFFF;
+    --accent-soft:#DCEAE4;
+    --accent-2:#E0935F;
+    --accent-2-soft:#FBE7D6;
+    --border:#DCE7E2;
+    --shadow:0 12px 32px -16px rgba(28,43,36,0.18);
+    --shadow-sm:0 4px 14px -8px rgba(28,43,36,0.16);
+    --radius-lg:28px;
+    --radius-md:18px;
+    --radius-sm:12px;
+    --font-display:'Manrope',ui-sans-serif,system-ui,sans-serif;
+    --font-body:'Inter',ui-sans-serif,system-ui,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0F1613;
+      --surface:#17211D;
+      --surface-alt:#1D2A24;
+      --ink:#EAF2EE;
+      --ink-soft:#9FB4AA;
+      --ink-faint:#6C8177;
+      --accent:#6FBFA6;
+      --accent-ink:#0D1815;
+      --accent-soft:#20362E;
+      --accent-2:#EFA872;
+      --accent-2-soft:#3A2A1E;
+      --border:#28352F;
+      --shadow:0 12px 32px -16px rgba(0,0,0,0.55);
+      --shadow-sm:0 4px 14px -8px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0F1613;
+    --surface:#17211D;
+    --surface-alt:#1D2A24;
+    --ink:#EAF2EE;
+    --ink-soft:#9FB4AA;
+    --ink-faint:#6C8177;
+    --accent:#6FBFA6;
+    --accent-ink:#0D1815;
+    --accent-soft:#20362E;
+    --accent-2:#EFA872;
+    --accent-2-soft:#3A2A1E;
+    --border:#28352F;
+    --shadow:0 12px 32px -16px rgba(0,0,0,0.55);
+    --shadow-sm:0 4px 14px -8px rgba(0,0,0,0.5);
+  }
+
+  *{box-sizing:border-box;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font-body);}
+  h1,h2,h3,.display{font-family:var(--font-display);text-wrap:balance;}
+  button{font-family:var(--font-body);}
+  ::selection{background:var(--accent-soft);}
+
+  .wrap{max-width:980px;margin:0 auto;padding:28px 20px 64px;display:flex;flex-direction:column;gap:28px;}
+
+  /* ---------- Header ---------- */
+  .hero{position:relative;overflow:hidden;border-radius:var(--radius-lg);background:linear-gradient(155deg,var(--accent-soft) 0%,var(--surface) 62%);padding:30px 28px;box-shadow:var(--shadow-sm);border:1px solid var(--border);}
+  .hero::after{content:"";position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,var(--accent) 0%,transparent 70%);opacity:.18;animation:float 12s ease-in-out infinite;}
+  @keyframes float{0%,100%{transform:translate(0,0);}50%{transform:translate(-14px,18px);}}
+  .brand-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between;position:relative;z-index:1;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand-mark{width:44px;height:44px;border-radius:14px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px;flex:none;box-shadow:var(--shadow-sm);}
+  .brand-name{font-size:22px;font-weight:800;letter-spacing:-0.02em;margin:0;}
+  .brand-tag{color:var(--ink-soft);font-size:13.5px;margin:2px 0 0;}
+  .channels{display:flex;gap:8px;flex-wrap:wrap;}
+  .chan-pill{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);padding:7px 12px 7px 10px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:transform .15s ease, box-shadow .15s ease;user-select:none;}
+  .chan-pill:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm);}
+  .chan-pill .dot{width:7px;height:7px;border-radius:50%;background:#9BB3A9;}
+  .chan-pill.on .dot{background:var(--accent);}
+  .chan-pill.on{color:var(--ink);}
+  .hero h1.display{font-size:26px;margin:22px 0 6px;position:relative;z-index:1;max-width:520px;}
+  .hero p.sub{color:var(--ink-soft);margin:0;max-width:480px;font-size:14.5px;line-height:1.55;position:relative;z-index:1;}
+
+  /* ---------- Flow card ---------- */
+  .flow-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden;}
+  .flow-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 0;}
+  .steps{display:flex;gap:6px;padding:0 24px;margin-top:14px;}
+  .step-dot{height:4px;flex:1;border-radius:99px;background:var(--border);transition:background .3s ease;}
+  .step-dot.active{background:var(--accent);}
+  .flow-body{padding:24px;}
+
+  /* Dropzone */
+  .dropzone{border:2px dashed var(--border);border-radius:var(--radius-md);padding:44px 20px;text-align:center;background:var(--surface-alt);cursor:pointer;transition:border-color .2s ease, background .2s ease, transform .15s ease;}
+  .dropzone:hover, .dropzone.drag{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-1px);}
+  .dropzone .dz-icon{font-size:34px;display:block;margin-bottom:10px;}
+  .dropzone h3{margin:0 0 6px;font-size:17px;}
+  .dropzone p{margin:0;color:var(--ink-soft);font-size:13.5px;}
+  .dropzone .dz-btn{display:inline-block;margin-top:16px;background:var(--accent);color:var(--accent-ink);padding:10px 20px;border-radius:999px;font-weight:700;font-size:13.5px;}
+  input[type=file]{display:none;}
+
+  /* Analyzing */
+  .analyzing{text-align:center;padding:50px 20px;}
+  .pulse-ring{width:64px;height:64px;border-radius:50%;border:4px solid var(--accent-soft);border-top-color:var(--accent);margin:0 auto 22px;animation:spin 1s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .analyzing p{color:var(--ink-soft);font-size:14px;min-height:20px;}
+  @media (prefers-reduced-motion: reduce){.pulse-ring{animation:none;border-top-color:var(--accent);}}
+
+  /* Review */
+  .review-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:26px;}
+  @media (max-width:720px){.review-grid{grid-template-columns:1fr;}}
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+  .field label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint);}
+  .field input, .field textarea{font-family:var(--font-body);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;background:var(--surface);color:var(--ink);}
+  .field input:focus-visible, .field textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
+  .field textarea{resize:vertical;min-height:74px;line-height:1.5;}
+  .row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+  .thumbs{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;}
+  .thumbs img{width:64px;height:64px;object-fit:cover;border-radius:10px;border:1px solid var(--border);flex:none;}
+
+  .toggles{display:flex;flex-direction:column;gap:10px;margin:18px 0 20px;padding:14px;background:var(--surface-alt);border-radius:var(--radius-sm);}
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;font-size:13.5px;font-weight:600;}
+  .switch{position:relative;width:38px;height:22px;border-radius:99px;background:var(--border);flex:none;cursor:pointer;transition:background .2s ease;}
+  .switch::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--surface);box-shadow:var(--shadow-sm);transition:transform .2s ease;}
+  .switch.on{background:var(--accent);}
+  .switch.on::after{transform:translateX(16px);}
+
+  .actions{display:flex;gap:10px;margin-top:6px;}
+  .btn{border:none;border-radius:999px;padding:12px 20px;font-weight:700;font-size:14px;cursor:pointer;transition:transform .15s ease, opacity .15s ease;}
+  .btn:active{transform:scale(.97);}
+  .btn-primary{background:var(--accent);color:var(--accent-ink);}
+  .btn-ghost{background:transparent;color:var(--ink-soft);border:1px solid var(--border);}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+
+  /* Previews */
+  .preview-col{display:flex;flex-direction:column;gap:14px;}
+  .preview-tabs{display:flex;gap:6px;}
+  .ptab{border:1px solid var(--border);background:var(--surface);color:var(--ink-soft);border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:700;cursor:pointer;}
+  .ptab.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+  .ptab.dim{opacity:.4;}
+  .preview-frame{border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;background:var(--surface-alt);}
+
+  .fb-card{background:var(--surface);}
+  .fb-head{display:flex;gap:10px;align-items:center;padding:12px 14px;}
+  .fb-avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex:none;}
+  .fb-name{font-size:13.5px;font-weight:700;}
+  .fb-time{font-size:11.5px;color:var(--ink-faint);}
+  .fb-text{padding:0 14px 12px;font-size:13.5px;line-height:1.5;white-space:pre-wrap;}
+  .fb-img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:var(--accent-soft);}
+  .fb-actions{display:flex;gap:16px;padding:10px 14px;border-top:1px solid var(--border);color:var(--ink-faint);font-size:12px;font-weight:600;}
+
+  .ig-card{background:var(--surface);}
+  .ig-head{display:flex;gap:10px;align-items:center;padding:10px 12px;}
+  .ig-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent-2),var(--accent));flex:none;}
+  .ig-name{font-size:12.5px;font-weight:700;}
+  .ig-img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:var(--accent-soft);}
+  .ig-caption{padding:10px 12px 14px;font-size:12.5px;line-height:1.5;}
+  .ig-caption b{font-weight:700;}
+  .ig-tags{color:var(--accent);}
+
+  .site-card{background:var(--surface);}
+  .site-img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:var(--accent-soft);}
+  .site-body{padding:14px;}
+  .site-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+  .site-title{font-weight:800;font-size:15px;}
+  .site-price{background:var(--accent-2-soft);color:var(--accent-2);font-weight:800;padding:4px 10px;border-radius:999px;font-size:12.5px;white-space:nowrap;}
+  .site-specs{color:var(--ink-soft);font-size:12.5px;margin:6px 0 10px;}
+  .site-btn{display:inline-block;background:var(--ink);color:var(--bg);font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:999px;}
+
+  /* Success */
+  .success{padding:40px 20px;text-align:center;}
+  .success .check{width:58px;height:58px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px;}
+  .success h3{margin:0 0 6px;}
+  .success p{color:var(--ink-soft);margin:0 0 22px;font-size:14px;}
+  .pub-list{display:flex;flex-direction:column;gap:8px;max-width:280px;margin:0 auto 22px;}
+  .pub-item{display:flex;align-items:center;gap:10px;background:var(--surface-alt);border-radius:var(--radius-sm);padding:10px 14px;font-size:13.5px;font-weight:600;opacity:0;transform:translateY(6px);animation:pop .4s ease forwards;}
+  .pub-item span.tick{color:var(--accent);font-weight:800;}
+  @keyframes pop{to{opacity:1;transform:translateY(0);}}
+
+  /* History */
+  .history h2{font-size:17px;margin:0 0 4px;}
+  .history > p{color:var(--ink-soft);font-size:13px;margin:0 0 16px;}
+  .hist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;}
+  .hist-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;box-shadow:var(--shadow-sm);}
+  .hist-img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;}
+  .hist-ph{width:100%;aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;font-size:30px;background:var(--accent-soft);}
+  .hist-body{padding:12px 14px 14px;}
+  .hist-title{font-weight:700;font-size:13.5px;margin-bottom:2px;}
+  .hist-meta{color:var(--ink-soft);font-size:12px;margin-bottom:8px;}
+  .hist-chans{display:flex;gap:5px;flex-wrap:wrap;}
+  .hist-chip{font-size:10.5px;font-weight:700;background:var(--accent-soft);color:var(--accent);padding:3px 8px;border-radius:999px;}
+
+  .disclaimer{font-size:12px;color:var(--ink-faint);text-align:center;line-height:1.6;}
+  .disclaimer b{color:var(--ink-soft);}
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="brand-row">
+      <div class="brand">
+        <div class="brand-mark">🪄</div>
+        <div>
+          <p class="brand-name display">Diffuz</p>
+          <p class="brand-tag">Une capture, toutes vos vitrines.</p>
+        </div>
+      </div>
+      <div class="channels" id="channelPills">
+        <div class="chan-pill on" data-chan="facebook"><span class="dot"></span>Facebook</div>
+        <div class="chan-pill on" data-chan="instagram"><span class="dot"></span>Instagram</div>
+        <div class="chan-pill on" data-chan="site"><span class="dot"></span>Site internet</div>
+      </div>
+    </div>
+    <h1 class="display">Déposez, vérifiez, c'est diffusé.</h1>
+    <p class="sub">Glissez la capture d'écran de votre annonce AutoScout24 et vos photos : Diffuz rédige et publie automatiquement sur les réseaux que vous avez choisis.</p>
+  </header>
+
+  <main class="flow-card">
+    <div class="flow-head">
+      <h2 class="display" id="stepTitle" style="font-size:16px;margin:0;">1. Déposer l'annonce</h2>
+      <span id="stepCount" style="font-size:12px;color:var(--ink-faint);font-weight:700;">Étape 1/3</span>
+    </div>
+    <div class="steps">
+      <div class="step-dot active" id="dot1"></div>
+      <div class="step-dot" id="dot2"></div>
+      <div class="step-dot" id="dot3"></div>
+    </div>
+
+    <div class="flow-body">
+
+      <!-- STEP 1: dropzone -->
+      <section id="stepDrop">
+        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Déposer la capture d'écran et les photos">
+          <span class="dz-icon">📥</span>
+          <h3>Déposez la capture d'écran + les photos ici</h3>
+          <p>Ou cliquez pour parcourir vos fichiers (image, plusieurs à la fois)</p>
+          <span class="dz-btn">Choisir des fichiers</span>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" multiple>
+      </section>
+
+      <!-- STEP: analyzing -->
+      <section id="stepAnalyze" hidden>
+        <div class="analyzing">
+          <div class="pulse-ring"></div>
+          <p id="analyzeMsg">Lecture de la capture d'écran…</p>
+        </div>
+      </section>
+
+      <!-- STEP 2: review -->
+      <section id="stepReview" hidden>
+        <div class="thumbs" id="thumbRow"></div>
+        <div class="review-grid">
+          <div>
+            <div class="field">
+              <label for="fTitle">Titre (marque / modèle)</label>
+              <input id="fTitle" type="text">
+            </div>
+            <div class="row-2">
+              <div class="field">
+                <label for="fPrice">Prix</label>
+                <input id="fPrice" type="text">
+              </div>
+              <div class="field">
+                <label for="fKm">Kilométrage</label>
+                <input id="fKm" type="text">
+              </div>
+            </div>
+            <div class="field">
+              <label for="fDesc">Description</label>
+              <textarea id="fDesc"></textarea>
+            </div>
+
+            <div class="toggles">
+              <div class="toggle-row">Facebook<div class="switch on" data-chan="facebook"></div></div>
+              <div class="toggle-row">Instagram<div class="switch on" data-chan="instagram"></div></div>
+              <div class="toggle-row">Site internet<div class="switch on" data-chan="site"></div></div>
+            </div>
+
+            <div class="actions">
+              <button class="btn btn-ghost" id="btnRestart">Recommencer</button>
+              <button class="btn btn-primary" id="btnPublish">Publier maintenant</button>
+            </div>
+          </div>
+
+          <div class="preview-col">
+            <div class="preview-tabs">
+              <div class="ptab active" data-tab="facebook">Facebook</div>
+              <div class="ptab" data-tab="instagram">Instagram</div>
+              <div class="ptab" data-tab="site">Site</div>
+            </div>
+
+            <div class="preview-frame" id="prevFacebook">
+              <div class="fb-card">
+                <div class="fb-head">
+                  <div class="fb-avatar">GM</div>
+                  <div>
+                    <div class="fb-name">Garage Martin</div>
+                    <div class="fb-time">à l'instant · 🌐</div>
+                  </div>
+                </div>
+                <div class="fb-text" id="fbText"></div>
+                <img class="fb-img" id="fbImg" alt="Photo du véhicule">
+                <div class="fb-actions"><span>👍 J'aime</span><span>💬 Commenter</span><span>↗ Partager</span></div>
+              </div>
+            </div>
+
+            <div class="preview-frame" id="prevInstagram" hidden>
+              <div class="ig-card">
+                <div class="ig-head"><div class="ig-avatar"></div><div class="ig-name">garage.martin</div></div>
+                <img class="ig-img" id="igImg" alt="Photo du véhicule">
+                <div class="ig-caption" id="igCaption"></div>
+              </div>
+            </div>
+
+            <div class="preview-frame" id="prevSite" hidden>
+              <div class="site-card">
+                <img class="site-img" id="siteImg" alt="Photo du véhicule">
+                <div class="site-body">
+                  <div class="site-top">
+                    <div class="site-title" id="siteTitle"></div>
+                    <div class="site-price" id="sitePrice"></div>
+                  </div>
+                  <div class="site-specs" id="siteSpecs"></div>
+                  <span class="site-btn">Voir l'annonce</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 3: success -->
+      <section id="stepSuccess" hidden>
+        <div class="success">
+          <div class="check">✓</div>
+          <h3 class="display">Publié avec succès</h3>
+          <p>Votre annonce est en ligne sur les canaux sélectionnés.</p>
+          <div class="pub-list" id="pubList"></div>
+          <button class="btn btn-primary" id="btnNew">Nouvelle publication</button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <section class="history">
+    <h2 class="display">Historique</h2>
+    <p>Les dernières annonces diffusées avec Diffuz.</p>
+    <div class="hist-grid" id="histGrid"></div>
+  </section>
+
+  <p class="disclaimer"><b>Prototype de test.</b> L'extraction des champs est simulée ici pour valider le parcours ; en production elle est réalisée par lecture vision de la capture d'écran (voir le cahier des charges, module de saisie).</p>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var samples = [
+    {title:"Peugeot 208 1.2 PureTech 2019", price:"12 900 €", km:"68 400 km", desc:"Peugeot 208 essence, 1ère main, entretien suivi, climatisation, régulateur de vitesse. Contrôle technique OK.", emoji:"🚗"},
+    {title:"Renault Clio V Business 2020", price:"14 500 €", km:"41 200 km", desc:"Renault Clio diesel, faible kilométrage, GPS intégré, garantie constructeur restante. Véhicule non fumeur.", emoji:"🚙"},
+    {title:"Volkswagen Golf 7 TDI 2018", price:"15 990 €", km:"92 000 km", desc:"Golf 7 diesel, boîte manuelle, révision complète effectuée, pneus neufs. Bon état général.", emoji:"🚘"}
+  ];
+
+  var state = {
+    files: [],
+    urls: [],
+    current: null,
+    channels: {facebook:true, instagram:true, site:true}
+  };
+
+  var el = function(id){ return document.getElementById(id); };
+
+  var dropzone = el('dropzone'), fileInput = el('fileInput');
+  var stepDrop = el('stepDrop'), stepAnalyze = el('stepAnalyze'), stepReview = el('stepReview'), stepSuccess = el('stepSuccess');
+  var dot1 = el('dot1'), dot2 = el('dot2'), dot3 = el('dot3'), stepTitle = el('stepTitle'), stepCount = el('stepCount');
+
+  function setStep(n){
+    stepDrop.hidden = n!==1;
+    stepAnalyze.hidden = n!==1.5;
+    stepReview.hidden = n!==2;
+    stepSuccess.hidden = n!==3;
+    dot1.classList.toggle('active', n>=1);
+    dot2.classList.toggle('active', n>=1.5);
+    dot3.classList.toggle('active', n>=3);
+    if(n===1){stepTitle.textContent='1. Déposer l\'annonce'; stepCount.textContent='Étape 1/3';}
+    if(n===1.5){stepTitle.textContent='2. Analyse en cours'; stepCount.textContent='Étape 2/3';}
+    if(n===2){stepTitle.textContent='2. Vérifier avant diffusion'; stepCount.textContent='Étape 2/3';}
+    if(n===3){stepTitle.textContent='3. Diffusé'; stepCount.textContent='Étape 3/3';}
+  }
+
+  dropzone.addEventListener('click', function(){ fileInput.click(); });
+  dropzone.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ fileInput.click(); } });
+  ['dragenter','dragover'].forEach(function(ev){
+    dropzone.addEventListener(ev, function(e){ e.preventDefault(); dropzone.classList.add('drag'); });
+  });
+  ['dragleave','drop'].forEach(function(ev){
+    dropzone.addEventListener(ev, function(e){ e.preventDefault(); dropzone.classList.remove('drag'); });
+  });
+  dropzone.addEventListener('drop', function(e){
+    handleFiles(e.dataTransfer.files);
+  });
+  fileInput.addEventListener('change', function(e){ handleFiles(e.target.files); });
+
+  function handleFiles(fileList){
+    var files = Array.prototype.filter.call(fileList, function(f){ return f.type.indexOf('image/')===0; });
+    if(!files.length) return;
+    state.files = files;
+    try{
+      state.urls = files.map(function(f){ return URL.createObjectURL(f); });
+    }catch(e){ state.urls = []; }
+    runAnalysis();
+  }
+
+  var analyzeMsgs = ["Lecture de la capture d'écran…","Extraction du prix et du kilométrage…","Préparation des publications…"];
+  function runAnalysis(){
+    setStep(1.5);
+    var msgEl = el('analyzeMsg');
+    var i = 0;
+    msgEl.textContent = analyzeMsgs[0];
+    var t = setInterval(function(){
+      i++;
+      if(i < analyzeMsgs.length){ msgEl.textContent = analyzeMsgs[i]; }
+    }, 550);
+    setTimeout(function(){
+      clearInterval(t);
+      fillReview();
+      setStep(2);
+    }, 1750);
+  }
+
+  function fillReview(){
+    var s = samples[Math.floor(Math.random()*samples.length)];
+    state.current = Object.assign({}, s);
+
+    var thumbRow = el('thumbRow');
+    thumbRow.innerHTML = '';
+    var urls = state.urls.length ? state.urls : [];
+    urls.forEach(function(u){
+      var img = document.createElement('img');
+      img.src = u;
+      thumbRow.appendChild(img);
+    });
+    if(!urls.length){
+      thumbRow.innerHTML = '<div style="font-size:12px;color:var(--ink-faint);">Aucune photo détectée dans le dépôt — exemple ci-dessous.</div>';
+    }
+
+    el('fTitle').value = s.title;
+    el('fPrice').value = s.price;
+    el('fKm').value = s.km;
+    el('fDesc').value = s.desc;
+
+    updatePreviews();
+  }
+
+  function heroImageSrc(){
+    return state.urls[0] || '';
+  }
+
+  function updatePreviews(){
+    var title = el('fTitle').value, price = el('fPrice').value, km = el('fKm').value, desc = el('fDesc').value;
+    var img = heroImageSrc();
+
+    el('fbText').textContent = title + ' — ' + price + '\n' + km + '\n\n' + desc;
+    if(img){ el('fbImg').src = img; el('fbImg').style.display='block'; } else { el('fbImg').style.display='none'; }
+
+    var tag = title.split(' ')[0];
+    el('igCaption').innerHTML = '<b>garage.martin</b> ' + title + ' · ' + price + '<br>' + desc + '<br><span class="ig-tags">#' + tag + ' #occasion #garagemartin</span>';
+    if(img){ el('igImg').src = img; el('igImg').style.display='block'; } else { el('igImg').style.display='none'; }
+
+    el('siteTitle').textContent = title;
+    el('sitePrice').textContent = price;
+    el('siteSpecs').textContent = km + ' · Essence · Boîte manuelle';
+    if(img){ el('siteImg').src = img; el('siteImg').style.display='block'; } else { el('siteImg').style.display='none'; }
+  }
+
+  ['fTitle','fPrice','fKm','fDesc'].forEach(function(id){
+    el(id).addEventListener('input', updatePreviews);
+  });
+
+  // preview tabs
+  document.querySelectorAll('.ptab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      document.querySelectorAll('.ptab').forEach(function(t){ t.classList.remove('active'); });
+      tab.classList.add('active');
+      ['facebook','instagram','site'].forEach(function(c){
+        el('prev' + c.charAt(0).toUpperCase() + c.slice(1)).hidden = (c !== tab.dataset.tab);
+      });
+    });
+  });
+
+  // channel switches (inside review)
+  document.querySelectorAll('.switch').forEach(function(sw){
+    sw.addEventListener('click', function(){
+      var chan = sw.dataset.chan;
+      state.channels[chan] = !state.channels[chan];
+      sw.classList.toggle('on', state.channels[chan]);
+      var tab = document.querySelector('.ptab[data-tab="'+chan+'"]');
+      if(tab) tab.classList.toggle('dim', !state.channels[chan]);
+    });
+  });
+
+  // top channel pills (connection status, purely visual)
+  document.querySelectorAll('.chan-pill').forEach(function(p){
+    p.addEventListener('click', function(){ p.classList.toggle('on'); });
+  });
+
+  el('btnRestart').addEventListener('click', function(){
+    setStep(1);
+  });
+
+  el('btnPublish').addEventListener('click', function(){
+    var list = el('pubList');
+    list.innerHTML = '';
+    var chans = [];
+    if(state.channels.facebook) chans.push('Facebook');
+    if(state.channels.instagram) chans.push('Instagram');
+    if(state.channels.site) chans.push('Site internet');
+    if(!chans.length){ chans.push('Aucun canal sélectionné'); }
+
+    chans.forEach(function(name, idx){
+      var item = document.createElement('div');
+      item.className = 'pub-item';
+      item.style.animationDelay = (idx*0.15) + 's';
+      item.innerHTML = '<span class="tick">✓</span> ' + name;
+      list.appendChild(item);
+    });
+
+    setStep(3);
+    saveHistory(chans);
+  });
+
+  el('btnNew').addEventListener('click', function(){
+    setStep(1);
+  });
+
+  // ---- history (persisted per-viewer via localStorage, best-effort) ----
+  var defaultHistory = [
+    {title:"Citroën C3 1.2 2017", price:"9 490 €", chans:["Facebook","Instagram","Site internet"], emoji:"🚗"},
+    {title:"Ford Fiesta 1.0 2018", price:"10 200 €", chans:["Facebook","Site internet"], emoji:"🚙"}
+  ];
+
+  function loadHistory(){
+    try{
+      var raw = localStorage.getItem('diffuz_history');
+      return raw ? JSON.parse(raw) : defaultHistory;
+    }catch(e){ return defaultHistory; }
+  }
+  function saveHistory(chans){
+    var hist = loadHistory();
+    hist.unshift({
+      title: el('fTitle').value,
+      price: el('fPrice').value,
+      chans: chans,
+      emoji: (state.current && state.current.emoji) || '🚗',
+      img: state.urls[0] || null
+    });
+    try{ localStorage.setItem('diffuz_history', JSON.stringify(hist.slice(0,8))); }catch(e){}
+    renderHistory();
+  }
+  function renderHistory(){
+    var hist = loadHistory();
+    var grid = el('histGrid');
+    grid.innerHTML = '';
+    hist.forEach(function(h){
+      var card = document.createElement('div');
+      card.className = 'hist-card';
+      var media = h.img
+        ? '<img class="hist-img" src="'+h.img+'" alt="">'
+        : '<div class="hist-ph">'+(h.emoji||'🚗')+'</div>';
+      card.innerHTML = media +
+        '<div class="hist-body">' +
+          '<div class="hist-title">'+h.title+'</div>' +
+          '<div class="hist-meta">'+h.price+'</div>' +
+          '<div class="hist-chans">'+h.chans.map(function(c){return '<span class="hist-chip">'+c+'</span>';}).join('')+'</div>' +
+        '</div>';
+      grid.appendChild(card);
+    });
+  }
+
+  renderHistory();
+  setStep(1);
+})();
+</script>

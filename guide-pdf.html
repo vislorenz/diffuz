@@ -1,0 +1,165 @@
+<title>Guide PDF Diffuz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    --bg:#F4F7F5;
+    --surface:#FFFFFF;
+    --surface-alt:#EAF1EE;
+    --ink:#1C2B24;
+    --ink-soft:#5E7269;
+    --ink-faint:#8CA098;
+    --accent:#3E7C6A;
+    --accent-ink:#FFFFFF;
+    --accent-soft:#DCEAE4;
+    --accent-2:#E0935F;
+    --accent-2-soft:#FBE7D6;
+    --border:#DCE7E2;
+    --shadow:0 12px 32px -16px rgba(28,43,36,0.18);
+    --shadow-sm:0 4px 14px -8px rgba(28,43,36,0.16);
+    --radius-lg:26px;
+    --radius-md:16px;
+    --radius-sm:10px;
+    --font-display:'Manrope',ui-sans-serif,system-ui,sans-serif;
+    --font-body:'Inter',ui-sans-serif,system-ui,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0F1613; --surface:#17211D; --surface-alt:#1D2A24;
+      --ink:#EAF2EE; --ink-soft:#9FB4AA; --ink-faint:#6C8177;
+      --accent:#6FBFA6; --accent-ink:#0D1815; --accent-soft:#20362E;
+      --accent-2:#EFA872; --accent-2-soft:#3A2A1E; --border:#28352F;
+      --shadow:0 12px 32px -16px rgba(0,0,0,0.55); --shadow-sm:0 4px 14px -8px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0F1613; --surface:#17211D; --surface-alt:#1D2A24;
+    --ink:#EAF2EE; --ink-soft:#9FB4AA; --ink-faint:#6C8177;
+    --accent:#6FBFA6; --accent-ink:#0D1815; --accent-soft:#20362E;
+    --accent-2:#EFA872; --accent-2-soft:#3A2A1E; --border:#28352F;
+    --shadow:0 12px 32px -16px rgba(0,0,0,0.55); --shadow-sm:0 4px 14px -8px rgba(0,0,0,0.5);
+  }
+
+  *{box-sizing:border-box;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font-body);}
+  h1,h2,h3,.display{font-family:var(--font-display);text-wrap:balance;}
+
+  .wrap{max-width:720px;margin:0 auto;padding:28px 20px 56px;display:flex;flex-direction:column;gap:22px;}
+
+  .hero{position:relative;overflow:hidden;border-radius:var(--radius-lg);background:linear-gradient(155deg,var(--accent-soft) 0%,var(--surface) 65%);padding:26px 24px;box-shadow:var(--shadow-sm);border:1px solid var(--border);}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand-mark{width:40px;height:40px;border-radius:12px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:19px;flex:none;}
+  .brand-name{font-size:15px;font-weight:800;margin:0;letter-spacing:-0.01em;}
+  .hero h1{font-size:23px;margin:18px 0 6px;max-width:460px;}
+  .hero p{color:var(--ink-soft);margin:0;font-size:14px;line-height:1.55;max-width:460px;}
+
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;}
+  .tab{flex:1;min-width:130px;display:flex;align-items:center;justify-content:center;gap:7px;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:11px 14px;font-weight:700;font-size:13.5px;color:var(--ink-soft);cursor:pointer;transition:transform .15s ease, box-shadow .15s ease;}
+  .tab:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm);}
+  .tab.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
+
+  .panel{display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:24px;}
+  .panel.active{display:block;}
+
+  .panel h2{font-size:17px;margin:0 0 4px;}
+  .panel .sub{color:var(--ink-soft);font-size:13px;margin:0 0 20px;}
+
+  .steps{display:flex;flex-direction:column;gap:14px;}
+  .step{display:flex;gap:14px;align-items:flex-start;}
+  .step-num{width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:13.5px;display:flex;align-items:center;justify-content:center;flex:none;}
+  .step p{margin:0;font-size:14.5px;line-height:1.6;padding-top:3px;}
+  .step kbd{background:var(--surface-alt);border:1px solid var(--border);border-radius:6px;padding:1px 7px;font-family:var(--font-body);font-weight:700;font-size:12.5px;}
+  .step b{font-weight:700;}
+
+  .tip{margin-top:18px;display:flex;gap:10px;background:var(--accent-2-soft);border-radius:var(--radius-sm);padding:12px 14px;font-size:13px;line-height:1.55;color:var(--ink);}
+  .tip .ico{font-size:16px;flex:none;}
+
+  .result{margin-top:18px;display:flex;align-items:center;gap:10px;background:var(--surface-alt);border-radius:var(--radius-sm);padding:12px 14px;font-size:13px;font-weight:600;color:var(--ink-soft);}
+  .result .ico{font-size:16px;}
+
+  .footer-note{font-size:12px;color:var(--ink-faint);text-align:center;line-height:1.6;}
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="brand">
+      <div class="brand-mark">🪄</div>
+      <p class="brand-name">Diffuz</p>
+    </div>
+    <h1 class="display">Imprimer votre annonce en PDF</h1>
+    <p>Avant de déposer votre annonce dans Diffuz, transformez-la en PDF — ça ne prend que quelques secondes. Choisissez votre appareil ci-dessous.</p>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <div class="tab" data-panel="pc">💻 Ordinateur</div>
+    <div class="tab" data-panel="android">🤖 Android</div>
+    <div class="tab" data-panel="ios">🍎 iPhone / iPad</div>
+  </nav>
+
+  <section class="panel" id="panel-pc">
+    <h2 class="display">Sur ordinateur (Windows ou Mac)</h2>
+    <p class="sub">Fonctionne à l'identique sur Chrome, Firefox, Edge ou Safari.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><p>Sur la page de votre annonce, appuyez sur <kbd>Ctrl</kbd> + <kbd>P</kbd> (ou <kbd>Cmd</kbd> + <kbd>P</kbd> sur Mac)</p></div>
+      <div class="step"><div class="step-num">2</div><p>Dans la fenêtre qui s'ouvre, changez la <b>destination</b> pour <b>« Enregistrer au format PDF »</b></p></div>
+      <div class="step"><div class="step-num">3</div><p>Cliquez sur <b>Enregistrer</b> et choisissez où garder le fichier</p></div>
+    </div>
+    <div class="result"><span class="ico">✅</span> Vous avez un fichier PDF, prêt à déposer dans Diffuz</div>
+  </section>
+
+  <section class="panel" id="panel-android">
+    <h2 class="display">Sur Android</h2>
+    <p class="sub">Avec Chrome, déjà installé sur la plupart des téléphones Android.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><p>Ouvrez l'annonce dans Chrome, puis appuyez sur <b>⋮</b> (les trois points en haut à droite)</p></div>
+      <div class="step"><div class="step-num">2</div><p>Appuyez sur <b>Partager, exporter</b> → <b>Imprimer</b></p></div>
+      <div class="step"><div class="step-num">3</div><p>En haut de l'écran, changez l'imprimante pour <b>« Enregistrer en PDF »</b>, puis appuyez sur l'icône de téléchargement</p></div>
+    </div>
+    <div class="result"><span class="ico">✅</span> Vous avez un fichier PDF, prêt à déposer dans Diffuz</div>
+  </section>
+
+  <section class="panel" id="panel-ios">
+    <h2 class="display">Sur iPhone / iPad</h2>
+    <p class="sub">Avec Safari. Apple cache un peu l'option, voici comment la trouver.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><p>Ouvrez l'annonce dans Safari, puis appuyez sur <b>Partager</b> (le carré avec la flèche)</p></div>
+      <div class="step"><div class="step-num">2</div><p>Faites défiler la liste et cherchez <b>« Créer un PDF »</b></p></div>
+      <div class="step"><div class="step-num">3</div><p>Si vous ne la voyez pas : appuyez sur <b>Imprimer</b>, puis <b>pincez l'aperçu avec deux doigts</b> comme pour zoomer une photo</p></div>
+      <div class="step"><div class="step-num">4</div><p>L'aperçu devient un vrai PDF plein écran. Appuyez sur <b>Partager</b> à nouveau → <b>« Enregistrer dans Fichiers »</b></p></div>
+    </div>
+    <div class="tip"><span class="ico">💡</span> L'étape du pincement surprend la première fois — normal, ce n'est pas un bouton visible. Une fois essayé, ça devient un réflexe.</div>
+    <div class="result"><span class="ico">✅</span> Vous avez un fichier PDF, prêt à déposer dans Diffuz</div>
+  </section>
+
+  <p class="footer-note">Une fois votre PDF enregistré, ouvrez Diffuz et déposez-le avec vos photos — le reste est automatique.</p>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var tabs = document.querySelectorAll('.tab');
+  var panels = document.querySelectorAll('.panel');
+
+  function select(key){
+    tabs.forEach(function(t){ t.classList.toggle('active', t.dataset.panel===key); });
+    panels.forEach(function(p){ p.classList.toggle('active', p.id==='panel-'+key); });
+    try{ localStorage.setItem('diffuz_guide_tab', key); }catch(e){}
+  }
+
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){ select(t.dataset.panel); });
+  });
+
+  var initial = 'pc';
+  try{
+    var ua = navigator.userAgent || '';
+    if(/iPad|iPhone|iPod/.test(ua)){ initial = 'ios'; }
+    else if(/Android/.test(ua)){ initial = 'android'; }
+    var saved = localStorage.getItem('diffuz_guide_tab');
+    if(saved){ initial = saved; }
+  }catch(e){}
+  select(initial);
+})();
+</script>
