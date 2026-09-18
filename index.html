@@ -779,40 +779,66 @@
     setStep(1);
   });
 
-  // ---- history (persisted per-viewer via localStorage, best-effort) ----
+  // ---- history: persisted via the artifact's db capability, localStorage as an instant-paint cache ----
   var defaultHistory = [
     {title:"Citroën C3 1.2 2017", price:"9 490 €", chans:["Facebook","Instagram","Site internet"], emoji:"🚗"},
     {title:"Ford Fiesta 1.0 2018", price:"10 200 €", chans:["Facebook","Site internet"], emoji:"🚙"}
   ];
+  var historyState = null; // null = not loaded yet
 
-  function loadHistory(){
+  function loadHistoryCache(){
     try{
       var raw = localStorage.getItem('diffuz_history');
       return raw ? JSON.parse(raw) : defaultHistory;
     }catch(e){ return defaultHistory; }
   }
+
+  function refreshHistoryFromDb(){
+    if(!window.claude || !window.claude.use) return;
+    window.claude.use('db').then(function(db){
+      if(!db) return null;
+      return db.doc('app/history').get();
+    }).then(function(snap){
+      if(snap && snap.exists){
+        var data = snap.data();
+        if(data && Array.isArray(data.items)){
+          historyState = data.items;
+          renderHistory();
+        }
+      }
+    }).catch(function(e){ console.warn('Diffuz: history db load failed', e); });
+  }
+
   function saveHistory(chans){
-    var hist = loadHistory();
+    var hist = historyState || loadHistoryCache();
+    hist = hist.slice();
     hist.unshift({
       title: el('fTitle').value,
       price: el('fPrice').value,
       chans: chans,
-      emoji: (state.current && state.current.emoji) || '🚗',
-      img: state.urls[0] || null
+      emoji: (state.current && state.current.emoji) || '🚗'
+      // pas de photo ici : les fichiers déposés ne sont gardés que le temps de la session,
+      // pas archivés dans l'historique pour ce prototype
     });
-    try{ localStorage.setItem('diffuz_history', JSON.stringify(hist.slice(0,8))); }catch(e){}
+    hist = hist.slice(0, 8);
+    historyState = hist;
+    try{ localStorage.setItem('diffuz_history', JSON.stringify(hist)); }catch(e){}
+    if(window.claude && window.claude.use){
+      window.claude.use('db').then(function(db){
+        if(!db) return;
+        return db.doc('app/history').set({ items: hist });
+      }).catch(function(e){ console.warn('Diffuz: history db save failed', e); });
+    }
     renderHistory();
   }
   function renderHistory(){
-    var hist = loadHistory();
+    var hist = historyState || loadHistoryCache();
     var grid = el('histGrid');
     grid.innerHTML = '';
     hist.forEach(function(h){
       var card = document.createElement('div');
       card.className = 'hist-card';
-      var media = h.img
-        ? '<img class="hist-img" src="'+h.img+'" alt="">'
-        : '<div class="hist-ph">'+(h.emoji||'🚗')+'</div>';
+      var media = '<div class="hist-ph">'+(h.emoji||'🚗')+'</div>';
       card.innerHTML = media +
         '<div class="hist-body">' +
           '<div class="hist-title">'+h.title+'</div>' +
@@ -827,6 +853,7 @@
   applyPageName();
   refreshPageNameFromDb();
   renderHistory();
+  refreshHistoryFromDb();
   setStep(1);
 })();
 </script>
