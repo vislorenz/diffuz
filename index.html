@@ -76,8 +76,7 @@
   .brand-mini-mark{width:26px;height:26px;border-radius:8px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-size:13px;flex:none;}
   .brand-mini-name{font-family:var(--font-display);font-weight:800;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);}
   .channels{display:flex;gap:8px;flex-wrap:wrap;}
-  .chan-pill{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);padding:7px 12px 7px 10px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:transform .15s ease, box-shadow .15s ease;user-select:none;}
-  .chan-pill:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm);}
+  .chan-pill{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);padding:7px 12px 7px 10px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--ink-soft);cursor:default;user-select:none;}
   .chan-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--ink-faint);}
   .chan-pill.on .dot{background:var(--accent);}
   .chan-pill.on{color:var(--ink);}
@@ -224,9 +223,9 @@
         <span class="brand-mini-name">Diffuz</span>
       </div>
       <div class="channels" id="channelPills">
-        <div class="chan-pill on" data-chan="facebook"><span class="dot"></span>Facebook</div>
-        <div class="chan-pill on" data-chan="instagram"><span class="dot"></span>Instagram</div>
-        <div class="chan-pill on" data-chan="site"><span class="dot"></span>Site internet</div>
+        <div class="chan-pill on" data-chan="facebook" title="Connecté — prêt à publier"><span class="dot"></span>Facebook</div>
+        <div class="chan-pill on" data-chan="instagram" title="Connecté — prêt à publier"><span class="dot"></span>Instagram</div>
+        <div class="chan-pill on" data-chan="site" title="Connecté — prêt à publier"><span class="dot"></span>Site internet</div>
       </div>
     </div>
 
@@ -394,7 +393,7 @@
     <div class="hist-grid" id="histGrid"></div>
   </section>
 
-  <p class="disclaimer"><b>Prototype de test.</b> Quand c'est possible (PDF déposé + autorisation Claude accordée dans ce navigateur), les champs de l'annonce complète sont réellement extraits par lecture automatique du PDF ; le post rapide (photo + message) ne passe pas par cette lecture, il suit directement à l'écran de vérification. Sinon, des données d'exemple illustrent le parcours (voir le cahier des charges, module de saisie). La fréquence de republication est enregistrée avec chaque annonce, mais la republication automatique elle-même n'a pas encore de moteur réel derrière (ça viendra avec le backend de planification, hors périmètre de ce prototype).</p>
+  <p class="disclaimer"><b>Prototype de test.</b> Quand c'est possible (PDF déposé + autorisation Claude accordée dans ce navigateur), les champs de l'annonce complète sont réellement extraits par lecture automatique du PDF ; le post rapide (photo + message) ne passe pas par cette lecture, il suit directement à l'écran de vérification. Sinon, des données d'exemple illustrent le parcours (voir le cahier des charges, module de saisie). Les pastilles Facebook/Instagram/Site en haut indiquent l'état de connexion du compte (pour l'instant toujours « connecté » à titre d'exemple — la vraie vérification de connexion arrivera avec les API Meta et le site du client). La fréquence de republication est enregistrée avec chaque annonce, mais la republication automatique elle-même n'a pas encore de moteur réel derrière (ça viendra avec le backend de planification, hors périmètre de ce prototype).</p>
 
 </div>
 
@@ -871,11 +870,6 @@
       var tab = document.querySelector('.ptab[data-tab="'+chan+'"]');
       if(tab) tab.classList.toggle('dim', !state.channels[chan]);
     });
-  });
-
-  // top channel pills (connection status, purely visual)
-  document.querySelectorAll('.chan-pill').forEach(function(p){
-    p.addEventListener('click', function(){ p.classList.toggle('on'); });
   });
 
   el('btnRestart').addEventListener('click', function(){
