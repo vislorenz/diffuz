@@ -130,6 +130,8 @@
   .freq-btn.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
   .hist-freq{font-size:10.5px;font-weight:700;color:var(--ink-soft);background:var(--surface-alt);padding:3px 8px;border-radius:999px;display:inline-flex;align-items:center;gap:4px;}
   .hist-stop{font-size:10.5px;font-weight:700;color:var(--accent-2);background:none;border:none;padding:0;cursor:pointer;text-decoration:underline;}
+  .hist-republish{margin-top:8px;font-size:11.5px;font-weight:700;color:var(--accent);background:var(--accent-soft);border:none;border-radius:999px;padding:6px 12px;cursor:pointer;}
+  .hist-republish:active{transform:scale(.97);}
   .switch{position:relative;width:38px;height:22px;border-radius:99px;background:var(--border);flex:none;cursor:pointer;transition:background .2s ease;}
   .switch::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--surface);box-shadow:var(--shadow-sm);transition:transform .2s ease;}
   .switch.on{background:var(--accent);}
@@ -849,7 +851,11 @@
   }
 
   async function uploadHeroForHistory(){
-    if(!state.files.length || !window.claude || !window.claude.use) return null;
+    // Republication depuis l'historique : pas de nouveau fichier, mais une URL déjà permanente à réutiliser telle quelle
+    if(!state.files.length){
+      return (state.urls[0] && state.urls[0].indexOf('blob:') !== 0) ? state.urls[0] : null;
+    }
+    if(!window.claude || !window.claude.use) return null;
     try{
       var assets = await window.claude.use('assets');
       if(!assets) return null;
@@ -863,6 +869,8 @@
       id: Date.now() + '-' + Math.random().toString(36).slice(2, 7),
       title: el('fTitle').value,
       price: el('fPrice').value,
+      km: el('fKm').value,
+      desc: el('fDesc').value,
       chans: chans,
       emoji: (state.current && state.current.emoji) || '🚗',
       frequency: state.frequency,
@@ -894,6 +902,44 @@
     persistHistory(hist);
   }
 
+  function republishFromHistory(id){
+    var hist = historyState || loadHistoryCache();
+    var h = hist.filter(function(x){ return x.id === id; })[0];
+    if(!h) return;
+
+    state.pdf = null;
+    state.files = [];
+    state.urls = h.img ? [h.img] : [];
+    state.current = { title: h.title, price: h.price, km: h.km, desc: h.desc, emoji: h.emoji };
+    state.frequency = h.frequency || 'once';
+    state.channels.facebook = h.chans.indexOf('Facebook') !== -1;
+    state.channels.instagram = h.chans.indexOf('Instagram') !== -1;
+    state.channels.site = h.chans.indexOf('Site internet') !== -1;
+
+    el('fTitle').value = h.title || '';
+    el('fPrice').value = h.price || '';
+    el('fKm').value = h.km || '';
+    el('fDesc').value = h.desc || '';
+
+    document.querySelectorAll('.switch').forEach(function(sw){
+      var on = state.channels[sw.dataset.chan];
+      sw.classList.toggle('on', on);
+    });
+    document.querySelectorAll('.freq-btn').forEach(function(b){
+      b.classList.toggle('active', b.dataset.freq === state.frequency);
+    });
+
+    var statusEl = el('extractStatus');
+    statusEl.textContent = '🔁 Fiche reprise depuis l\'historique — vérifiez avant de republier.';
+    statusEl.style.background = 'var(--surface-alt)';
+    statusEl.style.color = 'var(--ink-soft)';
+
+    renderThumbs();
+    updatePreviews();
+    setStep(2);
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
   function renderHistory(){
     var hist = historyState || loadHistoryCache();
     var grid = el('histGrid');
@@ -909,17 +955,24 @@
         ? '<div class="hist-chans" style="margin-top:6px;"><span class="hist-freq">🔁 '+(FREQ_LABELS[h.frequency]||h.frequency)+'</span>' +
           (h.id ? ' <button class="hist-stop" data-stop-id="'+h.id+'">Arrêter</button>' : '') + '</div>'
         : '';
+      var republishRow = h.id
+        ? '<button class="hist-republish" data-republish-id="'+h.id+'">↺ Republier</button>'
+        : '';
       card.innerHTML = media +
         '<div class="hist-body">' +
           '<div class="hist-title">'+h.title+'</div>' +
           '<div class="hist-meta">'+h.price+'</div>' +
           '<div class="hist-chans">'+h.chans.map(function(c){return '<span class="hist-chip">'+c+'</span>';}).join('')+'</div>' +
           freqRow +
+          republishRow +
         '</div>';
       grid.appendChild(card);
     });
     grid.querySelectorAll('[data-stop-id]').forEach(function(btn){
       btn.addEventListener('click', function(){ stopRecurring(btn.dataset.stopId); });
+    });
+    grid.querySelectorAll('[data-republish-id]').forEach(function(btn){
+      btn.addEventListener('click', function(){ republishFromHistory(btn.dataset.republishId); });
     });
   }
 
