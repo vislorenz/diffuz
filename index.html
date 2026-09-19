@@ -809,17 +809,27 @@
     }).catch(function(e){ console.warn('Diffuz: history db load failed', e); });
   }
 
-  function saveHistory(chans){
-    var hist = historyState || loadHistoryCache();
-    hist = hist.slice();
-    hist.unshift({
+  async function uploadHeroForHistory(){
+    if(!state.files.length || !window.claude || !window.claude.use) return null;
+    try{
+      var assets = await window.claude.use('assets');
+      if(!assets) return null;
+      var res = await assets.upload(state.files[0]);
+      return (res && res.url) || null;
+    }catch(e){ console.warn('Diffuz: photo upload for history failed', e); return null; }
+  }
+
+  async function saveHistory(chans){
+    var entry = {
       title: el('fTitle').value,
       price: el('fPrice').value,
       chans: chans,
-      emoji: (state.current && state.current.emoji) || '🚗'
-      // pas de photo ici : les fichiers déposés ne sont gardés que le temps de la session,
-      // pas archivés dans l'historique pour ce prototype
-    });
+      emoji: (state.current && state.current.emoji) || '🚗',
+      img: await uploadHeroForHistory()
+    };
+    var hist = historyState || loadHistoryCache();
+    hist = hist.slice();
+    hist.unshift(entry);
     hist = hist.slice(0, 8);
     historyState = hist;
     try{ localStorage.setItem('diffuz_history', JSON.stringify(hist)); }catch(e){}
@@ -838,7 +848,9 @@
     hist.forEach(function(h){
       var card = document.createElement('div');
       card.className = 'hist-card';
-      var media = '<div class="hist-ph">'+(h.emoji||'🚗')+'</div>';
+      var media = h.img
+        ? '<img class="hist-img" src="'+h.img+'" alt="">'
+        : '<div class="hist-ph">'+(h.emoji||'🚗')+'</div>';
       card.innerHTML = media +
         '<div class="hist-body">' +
           '<div class="hist-title">'+h.title+'</div>' +
