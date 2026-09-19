@@ -73,7 +73,7 @@
   @keyframes float{0%,100%{transform:translate(0,0);}50%{transform:translate(-14px,18px);}}
   .brand-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between;position:relative;z-index:1;}
   .brand-mini{display:flex;align-items:center;gap:8px;}
-  .brand-mini-mark{width:26px;height:26px;border-radius:8px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-size:13px;flex:none;}
+  .brand-mini-mark{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex:none;}
   .brand-mini-name{font-family:var(--font-display);font-weight:800;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);}
   .channels{display:flex;gap:8px;flex-wrap:wrap;}
   .chan-pill{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);padding:7px 12px 7px 10px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--ink-soft);cursor:default;user-select:none;}
@@ -219,7 +219,7 @@
   <header class="hero">
     <div class="brand-row">
       <div class="brand-mini">
-        <span class="brand-mini-mark"><svg viewBox="0 0 64 64" width="60%" height="60%" fill="none" aria-hidden="true"><line x1="19.87" y1="47.2" x2="45.27" y2="37.96" stroke="currentColor" stroke-width="4.4" stroke-linecap="round"/><line x1="19.87" y1="47.2" x2="41.92" y2="25.15" stroke="currentColor" stroke-width="4.4" stroke-linecap="round"/><line x1="19.87" y1="47.2" x2="31.96" y2="13.99" stroke="currentColor" stroke-width="4.4" stroke-linecap="round"/><circle cx="19.87" cy="47.2" r="7.8" fill="currentColor"/><circle cx="45.27" cy="37.96" r="6.65" fill="currentColor"/><circle cx="41.92" cy="25.15" r="5.82" fill="currentColor"/><circle cx="31.96" cy="13.99" r="4.99" fill="currentColor"/></svg></span>
+        <span class="brand-mini-mark"><svg viewBox="0 0 64 64" width="100%" height="100%" aria-hidden="true"><defs><linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2F6FE0"/><stop offset="100%" stop-color="#2F9E7C"/></linearGradient></defs><rect x="15" y="15" width="10" height="34" rx="5" fill="url(#logoGrad)"/><path d="M20,15 A17,17 0 0 1 36.17,37.25" fill="none" stroke="url(#logoGrad)" stroke-width="10" stroke-linecap="round"/><circle cx="35.05" cy="42.93" r="3.4" fill="url(#logoGrad)"/><circle cx="32.68" cy="48.23" r="2.4" fill="url(#logoGrad)"/><circle cx="29.44" cy="53.19" r="1.6" fill="url(#logoGrad)"/></svg></span>
         <span class="brand-mini-name">Difundo</span>
       </div>
       <div class="channels" id="channelPills">
