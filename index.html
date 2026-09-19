@@ -72,18 +72,23 @@
   .hero::after{content:"";position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,var(--accent) 0%,transparent 70%);opacity:.18;animation:float 12s ease-in-out infinite;}
   @keyframes float{0%,100%{transform:translate(0,0);}50%{transform:translate(-14px,18px);}}
   .brand-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between;position:relative;z-index:1;}
-  .brand{display:flex;align-items:center;gap:12px;}
-  .brand-mark{width:44px;height:44px;border-radius:14px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px;flex:none;box-shadow:var(--shadow-sm);}
-  .brand-name{font-size:22px;font-weight:800;letter-spacing:-0.02em;margin:0;}
-  .brand-tag{color:var(--ink-soft);font-size:13.5px;margin:2px 0 0;}
+  .brand-mini{display:flex;align-items:center;gap:8px;}
+  .brand-mini-mark{width:26px;height:26px;border-radius:8px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-size:13px;flex:none;}
+  .brand-mini-name{font-family:var(--font-display);font-weight:800;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);}
   .channels{display:flex;gap:8px;flex-wrap:wrap;}
   .chan-pill{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);padding:7px 12px 7px 10px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:transform .15s ease, box-shadow .15s ease;user-select:none;}
   .chan-pill:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm);}
   .chan-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--ink-faint);}
   .chan-pill.on .dot{background:var(--accent);}
   .chan-pill.on{color:var(--ink);}
-  .hero h1.display{font-size:26px;margin:22px 0 6px;position:relative;z-index:1;max-width:520px;}
-  .hero p.sub{color:var(--ink-soft);margin:0;max-width:480px;font-size:14.5px;line-height:1.55;position:relative;z-index:1;}
+  .page-identity{position:relative;z-index:1;margin:26px 0 8px;cursor:pointer;display:inline-block;}
+  .page-identity-tag{display:block;font-size:12px;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+  .page-identity-row{display:flex;align-items:center;gap:10px;}
+  .page-identity-name.display{font-size:36px;margin:0;letter-spacing:-0.02em;line-height:1.1;}
+  .page-identity-pencil{font-size:18px;opacity:.5;transition:opacity .15s ease, transform .15s ease;}
+  .page-identity:hover .page-identity-pencil, .page-identity:focus-visible .page-identity-pencil{opacity:1;transform:scale(1.08);}
+  #pageNameInput{font-family:var(--font-display);font-weight:800;font-size:36px;letter-spacing:-0.02em;border:none;border-bottom:2px solid var(--accent);background:transparent;color:inherit;outline:none;padding:0 0 2px;min-width:160px;}
+  .hero p.sub{color:var(--ink-soft);margin:10px 0 0;max-width:480px;font-size:14.5px;line-height:1.55;position:relative;z-index:1;}
 
   /* ---------- Flow card ---------- */
   .flow-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden;}
@@ -214,24 +219,26 @@
 
   <header class="hero">
     <div class="brand-row">
-      <div class="brand">
-        <div class="brand-mark">🪄</div>
-        <div>
-          <p class="brand-name display">Diffuz</p>
-          <p class="brand-tag">Une capture, toutes vos vitrines.</p>
-        </div>
+      <div class="brand-mini">
+        <span class="brand-mini-mark">🪄</span>
+        <span class="brand-mini-name">Diffuz</span>
       </div>
       <div class="channels" id="channelPills">
         <div class="chan-pill on" data-chan="facebook"><span class="dot"></span>Facebook</div>
         <div class="chan-pill on" data-chan="instagram"><span class="dot"></span>Instagram</div>
         <div class="chan-pill on" data-chan="site"><span class="dot"></span>Site internet</div>
-        <div class="chan-pill on" id="pageNameChip" title="Nom de votre page, réglé une fois — pas relu à chaque annonce">
-          ✏️ <span id="pageNameLabel">Garage Martin</span>
-          <input id="pageNameInput" type="text" hidden style="border:none;background:transparent;font:inherit;color:inherit;width:110px;padding:0;outline:none;">
-        </div>
       </div>
     </div>
-    <h1 class="display">Déposez, vérifiez, c'est diffusé.</h1>
+
+    <div class="page-identity" id="pageNameChip" tabindex="0" role="button" title="Cliquez pour modifier le nom affiché sur vos publications">
+      <span class="page-identity-tag">Vous publiez en tant que</span>
+      <div class="page-identity-row">
+        <h1 class="page-identity-name display" id="pageNameLabel">Garage Martin</h1>
+        <input id="pageNameInput" type="text" hidden>
+        <span class="page-identity-pencil">✏️</span>
+      </div>
+    </div>
+
     <p class="sub">Glissez la capture d'écran de votre annonce AutoScout24 et vos photos : Diffuz rédige et publie automatiquement sur les réseaux que vous avez choisis.</p>
   </header>
 
@@ -490,6 +497,10 @@
 
   el('pageNameChip').addEventListener('click', function(e){
     if(e.target.id !== 'pageNameInput') startEditPageName();
+  });
+  el('pageNameChip').addEventListener('keydown', function(e){
+    if(e.target.id === 'pageNameInput') return;
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); startEditPageName(); }
   });
   el('pageNameInput').addEventListener('click', function(e){ e.stopPropagation(); });
   el('pageNameInput').addEventListener('keydown', function(e){
