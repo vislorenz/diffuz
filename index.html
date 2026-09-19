@@ -124,6 +124,12 @@
 
   .toggles{display:flex;flex-direction:column;gap:10px;margin:18px 0 20px;padding:14px;background:var(--surface-alt);border-radius:var(--radius-sm);}
   .toggle-row{display:flex;align-items:center;justify-content:space-between;font-size:13.5px;font-weight:600;}
+  .freq-group{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+  .freq-btn{border:1px solid var(--border);background:var(--surface);color:var(--ink-soft);border-radius:999px;padding:8px 13px;font-size:12.5px;font-weight:700;cursor:pointer;transition:transform .15s ease;}
+  .freq-btn:hover{transform:translateY(-1px);}
+  .freq-btn.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
+  .hist-freq{font-size:10.5px;font-weight:700;color:var(--ink-soft);background:var(--surface-alt);padding:3px 8px;border-radius:999px;display:inline-flex;align-items:center;gap:4px;}
+  .hist-stop{font-size:10.5px;font-weight:700;color:var(--accent-2);background:none;border:none;padding:0;cursor:pointer;text-decoration:underline;}
   .switch{position:relative;width:38px;height:22px;border-radius:99px;background:var(--border);flex:none;cursor:pointer;transition:background .2s ease;}
   .switch::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--surface);box-shadow:var(--shadow-sm);transition:transform .2s ease;}
   .switch.on{background:var(--accent);}
@@ -287,6 +293,16 @@
               <div class="toggle-row">Site internet<div class="switch on" data-chan="site"></div></div>
             </div>
 
+            <div class="field">
+              <label>Republier automatiquement</label>
+              <div class="freq-group" id="freqGroup">
+                <button type="button" class="freq-btn active" data-freq="once">Une fois</button>
+                <button type="button" class="freq-btn" data-freq="daily">Tous les jours</button>
+                <button type="button" class="freq-btn" data-freq="3days">Tous les 3 jours</button>
+                <button type="button" class="freq-btn" data-freq="weekly">1x / semaine</button>
+              </div>
+            </div>
+
             <div class="actions">
               <button class="btn btn-ghost" id="btnRestart">Recommencer</button>
               <button class="btn btn-primary" id="btnPublish">Publier maintenant</button>
@@ -346,6 +362,7 @@
           <div class="check">✓</div>
           <h3 class="display">Publié avec succès</h3>
           <p>Votre annonce est en ligne sur les canaux sélectionnés.</p>
+          <p id="freqNote" style="font-size:13px;color:var(--ink-soft);margin:-6px 0 16px;"></p>
           <div class="pub-list" id="pubList"></div>
           <button class="btn btn-primary" id="btnNew">Nouvelle publication</button>
         </div>
@@ -360,7 +377,7 @@
     <div class="hist-grid" id="histGrid"></div>
   </section>
 
-  <p class="disclaimer"><b>Prototype de test.</b> Quand c'est possible (PDF déposé + autorisation Claude accordée dans ce navigateur), les champs sont réellement extraits par lecture automatique du PDF. Sinon, des données d'exemple illustrent le parcours (voir le cahier des charges, module de saisie).</p>
+  <p class="disclaimer"><b>Prototype de test.</b> Quand c'est possible (PDF déposé + autorisation Claude accordée dans ce navigateur), les champs sont réellement extraits par lecture automatique du PDF. Sinon, des données d'exemple illustrent le parcours (voir le cahier des charges, module de saisie). La fréquence de republication est enregistrée avec chaque annonce, mais la republication automatique elle-même n'a pas encore de moteur réel derrière (ça viendra avec le backend de planification, hors périmètre de ce prototype).</p>
 
 </div>
 
@@ -380,7 +397,15 @@
     pdf: null,
     current: null,
     channels: {facebook:true, instagram:true, site:true},
-    pageName: 'Garage Martin'
+    pageName: 'Garage Martin',
+    frequency: 'once'
+  };
+
+  var FREQ_LABELS = {
+    once: 'Une fois',
+    daily: 'Tous les jours',
+    '3days': 'Tous les 3 jours',
+    weekly: '1x / semaine'
   };
 
   var el = function(id){ return document.getElementById(id); };
@@ -606,6 +631,8 @@
 
   function fillReview(outcome){
     var s;
+    state.frequency = 'once';
+    document.querySelectorAll('.freq-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.freq==='once'); });
     var statusEl = el('extractStatus');
     if(outcome && outcome.ok){
       var d = outcome.data;
@@ -734,6 +761,14 @@
     });
   });
 
+  // fréquence de republication
+  document.querySelectorAll('.freq-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      state.frequency = btn.dataset.freq;
+      document.querySelectorAll('.freq-btn').forEach(function(b){ b.classList.toggle('active', b===btn); });
+    });
+  });
+
   // channel switches (inside review)
   document.querySelectorAll('.switch').forEach(function(sw){
     sw.addEventListener('click', function(){
@@ -770,6 +805,10 @@
       item.innerHTML = '<span class="tick">✓</span> ' + name;
       list.appendChild(item);
     });
+
+    el('freqNote').textContent = state.frequency === 'once'
+      ? ''
+      : '🔁 Sera republiée automatiquement — ' + FREQ_LABELS[state.frequency].toLowerCase() + ', jusqu\'à ce que vous l\'arrêtiez.';
 
     setStep(3);
     saveHistory(chans);
@@ -821,16 +860,22 @@
 
   async function saveHistory(chans){
     var entry = {
+      id: Date.now() + '-' + Math.random().toString(36).slice(2, 7),
       title: el('fTitle').value,
       price: el('fPrice').value,
       chans: chans,
       emoji: (state.current && state.current.emoji) || '🚗',
+      frequency: state.frequency,
       img: await uploadHeroForHistory()
     };
     var hist = historyState || loadHistoryCache();
     hist = hist.slice();
     hist.unshift(entry);
     hist = hist.slice(0, 8);
+    persistHistory(hist);
+  }
+
+  function persistHistory(hist){
     historyState = hist;
     try{ localStorage.setItem('diffuz_history', JSON.stringify(hist)); }catch(e){}
     if(window.claude && window.claude.use){
@@ -841,6 +886,14 @@
     }
     renderHistory();
   }
+
+  function stopRecurring(id){
+    var hist = (historyState || loadHistoryCache()).map(function(h){
+      return h.id === id ? Object.assign({}, h, { frequency: 'once' }) : h;
+    });
+    persistHistory(hist);
+  }
+
   function renderHistory(){
     var hist = historyState || loadHistoryCache();
     var grid = el('histGrid');
@@ -851,13 +904,22 @@
       var media = h.img
         ? '<img class="hist-img" src="'+h.img+'" alt="">'
         : '<div class="hist-ph">'+(h.emoji||'🚗')+'</div>';
+      var recurring = h.frequency && h.frequency !== 'once';
+      var freqRow = recurring
+        ? '<div class="hist-chans" style="margin-top:6px;"><span class="hist-freq">🔁 '+(FREQ_LABELS[h.frequency]||h.frequency)+'</span>' +
+          (h.id ? ' <button class="hist-stop" data-stop-id="'+h.id+'">Arrêter</button>' : '') + '</div>'
+        : '';
       card.innerHTML = media +
         '<div class="hist-body">' +
           '<div class="hist-title">'+h.title+'</div>' +
           '<div class="hist-meta">'+h.price+'</div>' +
           '<div class="hist-chans">'+h.chans.map(function(c){return '<span class="hist-chip">'+c+'</span>';}).join('')+'</div>' +
+          freqRow +
         '</div>';
       grid.appendChild(card);
+    });
+    grid.querySelectorAll('[data-stop-id]').forEach(function(btn){
+      btn.addEventListener('click', function(){ stopRecurring(btn.dataset.stopId); });
     });
   }
 
