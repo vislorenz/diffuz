@@ -1,16 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80" width="600" height="160">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 14 112 52" width="560" height="260" role="img" aria-label="Difun">
   <defs>
     <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#2F6FE0"/>
       <stop offset="100%" stop-color="#2F9E7C"/>
     </linearGradient>
   </defs>
-  <g transform="translate(6,8)">
+  <g transform="translate(-13,7)">
     <rect x="15" y="15" width="10" height="34" rx="5" fill="url(#g)"/>
     <path d="M20,15 A17,17 0 0 1 36.17,37.25" fill="none" stroke="url(#g)" stroke-width="10" stroke-linecap="round"/>
     <circle cx="35.05" cy="42.93" r="3.4" fill="url(#g)"/>
     <circle cx="32.68" cy="48.23" r="2.4" fill="url(#g)"/>
     <circle cx="29.44" cy="53.19" r="1.6" fill="url(#g)"/>
   </g>
-  <text x="62" y="53" font-family="Manrope, Arial, Helvetica, sans-serif" font-weight="800" font-size="40" letter-spacing="-1" fill="#16233A">Difundo</text>
+  <text x="33" y="56" font-family="Manrope, Arial, Helvetica, sans-serif" font-weight="800" font-size="44" letter-spacing="-1" fill="#16233A">ifun</text>
 </svg>

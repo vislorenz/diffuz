@@ -1,11 +1,11 @@
-# Difundo
+# Difun
 
 Outil de publication automatique multi-canal pour indépendants (vendeurs de véhicules d'occasion en premier cas d'usage) : une annonce imprimée en PDF + des photos, diffusées automatiquement sur Facebook, Instagram et le site internet du client.
 
 ## Contenu de ce dépôt
 
 - `index.html` — prototype front-end interactif (parcours complet : dépôt du PDF/photos → analyse simulée → vérification/édition → publication → historique). Fichier autonome, sans dépendance à installer.
-- `guide-pdf.html` — guide client pas-à-pas pour transformer une annonce en PDF avant de la déposer dans Difundo, selon l'appareil (ordinateur, Android, iPhone/iPad).
+- `guide-pdf.html` — guide client pas-à-pas pour transformer une annonce en PDF avant de la déposer dans Difun, selon l'appareil (ordinateur, Android, iPhone/iPad).
 
 ## Comment les ouvrir
 

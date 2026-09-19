@@ -1,4 +1,4 @@
-<title>Difundo</title>
+<title>Difun</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
@@ -72,9 +72,8 @@
   .hero::after{content:"";position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,var(--accent) 0%,transparent 70%);opacity:.18;animation:float 12s ease-in-out infinite;}
   @keyframes float{0%,100%{transform:translate(0,0);}50%{transform:translate(-14px,18px);}}
   .brand-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between;position:relative;z-index:1;}
-  .brand-mini{display:flex;align-items:center;gap:8px;}
-  .brand-mini-mark{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex:none;}
-  .brand-mini-name{font-family:var(--font-display);font-weight:800;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);}
+  .brand-mini{display:flex;align-items:center;}
+  .brand-mini-logo{height:28px;width:auto;display:block;color:var(--ink-faint);}
   .channels{display:flex;gap:8px;flex-wrap:wrap;}
   .chan-pill{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);padding:7px 12px 7px 10px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--ink-soft);cursor:default;user-select:none;}
   .chan-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--ink-faint);}
@@ -219,8 +218,7 @@
   <header class="hero">
     <div class="brand-row">
       <div class="brand-mini">
-        <span class="brand-mini-mark"><svg viewBox="0 0 64 64" width="100%" height="100%" aria-hidden="true"><defs><linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2F6FE0"/><stop offset="100%" stop-color="#2F9E7C"/></linearGradient></defs><rect x="15" y="15" width="10" height="34" rx="5" fill="url(#logoGrad)"/><path d="M20,15 A17,17 0 0 1 36.17,37.25" fill="none" stroke="url(#logoGrad)" stroke-width="10" stroke-linecap="round"/><circle cx="35.05" cy="42.93" r="3.4" fill="url(#logoGrad)"/><circle cx="32.68" cy="48.23" r="2.4" fill="url(#logoGrad)"/><circle cx="29.44" cy="53.19" r="1.6" fill="url(#logoGrad)"/></svg></span>
-        <span class="brand-mini-name">Difundo</span>
+        <svg class="brand-mini-logo" viewBox="0 12 116 54" role="img" aria-label="Difun"><defs><linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2F6FE0"/><stop offset="100%" stop-color="#2F9E7C"/></linearGradient></defs><g transform="translate(-13,7)"><rect x="15" y="15" width="10" height="34" rx="5" fill="url(#logoGrad)"/><path d="M20,15 A17,17 0 0 1 36.17,37.25" fill="none" stroke="url(#logoGrad)" stroke-width="10" stroke-linecap="round"/><circle cx="35.05" cy="42.93" r="3.4" fill="url(#logoGrad)"/><circle cx="32.68" cy="48.23" r="2.4" fill="url(#logoGrad)"/><circle cx="29.44" cy="53.19" r="1.6" fill="url(#logoGrad)"/></g><text x="34" y="56" font-family="Manrope, ui-sans-serif, system-ui, sans-serif" font-weight="800" font-size="44" letter-spacing="0.5" fill="currentColor">ifun</text></svg>
       </div>
       <div class="channels" id="channelPills">
         <div class="chan-pill on" data-chan="facebook" title="Connecté — prêt à publier"><span class="dot"></span>Facebook</div>
@@ -238,7 +236,7 @@
       </div>
     </div>
 
-    <p class="sub">Glissez la capture d'écran de votre annonce AutoScout24 et vos photos : Difundo rédige et publie automatiquement sur les réseaux que vous avez choisis.</p>
+    <p class="sub">Glissez la capture d'écran de votre annonce AutoScout24 et vos photos : Difun rédige et publie automatiquement sur les réseaux que vous avez choisis.</p>
   </header>
 
   <main class="flow-card">
@@ -389,7 +387,7 @@
 
   <section class="history">
     <h2 class="display">Historique</h2>
-    <p>Les dernières annonces diffusées avec Difundo.</p>
+    <p>Les dernières annonces diffusées avec Difun.</p>
     <div class="hist-grid" id="histGrid"></div>
   </section>
 
@@ -444,7 +442,7 @@
 
   function loadPageName(){
     try{
-      var saved = localStorage.getItem('difundo_page_name');
+      var saved = localStorage.getItem('difun_page_name');
       if(saved) state.pageName = saved;
     }catch(e){}
   }
@@ -462,16 +460,16 @@
           applyPageName();
         }
       }
-    }).catch(function(e){ console.warn('Difundo: db load failed', e); });
+    }).catch(function(e){ console.warn('Difun: db load failed', e); });
   }
 
   function savePageName(name){
-    try{ localStorage.setItem('difundo_page_name', name); }catch(e){}
+    try{ localStorage.setItem('difun_page_name', name); }catch(e){}
     if(!window.claude || !window.claude.use) return;
     window.claude.use('db').then(function(db){
       if(!db) return;
       return db.doc('settings/pageName').set({ value: name });
-    }).catch(function(e){ console.warn('Difundo: db save failed', e); });
+    }).catch(function(e){ console.warn('Difun: db save failed', e); });
   }
 
   function startEditPageName(){
@@ -638,10 +636,10 @@
   async function extractFromPdf(){
     if(!state.pdf) return { ok:false, reason:'no_pdf' };
     if(!window.claude || !window.claude.use) return { ok:false, reason:'no_runtime' };
-    var sample = await window.claude.use('sample').catch(function(e){ console.error('Difundo: use(sample) failed', e); return null; });
+    var sample = await window.claude.use('sample').catch(function(e){ console.error('Difun: use(sample) failed', e); return null; });
     if(!sample) return { ok:false, reason:'capability_unavailable' };
 
-    var text = await extractPdfText(state.pdf).catch(function(e){ console.error('Difundo: PDF text extraction failed', e); return ''; });
+    var text = await extractPdfText(state.pdf).catch(function(e){ console.error('Difun: PDF text extraction failed', e); return ''; });
     if(!text){ return { ok:false, reason:'pdf_no_text' }; }
 
     try{
@@ -655,11 +653,11 @@
         { modelTier: "default", cache: false }
       );
     }catch(e){
-      console.error('Difundo: sample.json() rejected', e);
+      console.error('Difun: sample.json() rejected', e);
       return { ok:false, reason: (e && e.code) || 'sample_error', detail: e && e.message };
     }
     if(!data || (!data.title && !data.price && !data.km && !data.desc)){
-      console.error('Difundo: sample.json() returned empty data', data);
+      console.error('Difun: sample.json() returned empty data', data);
       return { ok:false, reason:'empty_result', detail: data };
     }
     return {
@@ -684,7 +682,7 @@
     }, 700);
 
     var results = await Promise.all([
-      extractFromPdf().catch(function(e){ console.error('Difundo: extractFromPdf threw', e); return { ok:false, reason:'unexpected_error', detail: e && e.message }; }),
+      extractFromPdf().catch(function(e){ console.error('Difun: extractFromPdf threw', e); return { ok:false, reason:'unexpected_error', detail: e && e.message }; }),
       wait(1400)
     ]);
     var outcome = results[0];
@@ -722,7 +720,7 @@
     } else {
       s = samples[Math.floor(Math.random()*samples.length)];
       var reason = outcome && outcome.reason;
-      console.warn('Difundo: repli sur exemple —', reason, outcome && outcome.detail);
+      console.warn('Difun: repli sur exemple —', reason, outcome && outcome.detail);
       statusEl.textContent = '⚠️ Exemple affiché (pas de lecture réelle) — ' + (reasonLabels[reason] || reason || 'raison inconnue');
       statusEl.style.background = 'var(--accent-2-soft)';
       statusEl.style.color = 'var(--accent-2)';
@@ -914,7 +912,7 @@
 
   function loadHistoryCache(){
     try{
-      var raw = localStorage.getItem('difundo_history');
+      var raw = localStorage.getItem('difun_history');
       return raw ? JSON.parse(raw) : defaultHistory;
     }catch(e){ return defaultHistory; }
   }
@@ -932,7 +930,7 @@
           renderHistory();
         }
       }
-    }).catch(function(e){ console.warn('Difundo: history db load failed', e); });
+    }).catch(function(e){ console.warn('Difun: history db load failed', e); });
   }
 
   async function uploadHeroForHistory(){
@@ -946,7 +944,7 @@
       if(!assets) return null;
       var res = await assets.upload(state.files[0]);
       return (res && res.url) || null;
-    }catch(e){ console.warn('Difundo: photo upload for history failed', e); return null; }
+    }catch(e){ console.warn('Difun: photo upload for history failed', e); return null; }
   }
 
   async function saveHistory(chans){
@@ -972,12 +970,12 @@
 
   function persistHistory(hist){
     historyState = hist;
-    try{ localStorage.setItem('difundo_history', JSON.stringify(hist)); }catch(e){}
+    try{ localStorage.setItem('difun_history', JSON.stringify(hist)); }catch(e){}
     if(window.claude && window.claude.use){
       window.claude.use('db').then(function(db){
         if(!db) return;
         return db.doc('app/history').set({ items: hist });
-      }).catch(function(e){ console.warn('Difundo: history db save failed', e); });
+      }).catch(function(e){ console.warn('Difun: history db save failed', e); });
     }
     renderHistory();
   }
