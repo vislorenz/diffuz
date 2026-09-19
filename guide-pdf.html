@@ -1,4 +1,4 @@
-<title>Guide PDF Diffuz</title>
+<title>Guide PDF Difundo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
 <style>
@@ -48,7 +48,7 @@
 
   .hero{position:relative;overflow:hidden;border-radius:var(--radius-lg);background:linear-gradient(155deg,var(--accent-soft) 0%,var(--surface) 65%);padding:26px 24px;box-shadow:var(--shadow-sm);border:1px solid var(--border);}
   .brand{display:flex;align-items:center;gap:12px;}
-  .brand-mark{width:40px;height:40px;border-radius:12px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:19px;flex:none;}
+  .brand-mark{width:40px;height:40px;border-radius:12px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-size:19px;flex:none;}
   .brand-name{font-size:15px;font-weight:800;margin:0;letter-spacing:-0.01em;}
   .hero h1{font-size:23px;margin:18px 0 6px;max-width:460px;}
   .hero p{color:var(--ink-soft);margin:0;font-size:14px;line-height:1.55;max-width:460px;}
@@ -84,11 +84,11 @@
 
   <header class="hero">
     <div class="brand">
-      <div class="brand-mark">🪄</div>
-      <p class="brand-name">Diffuz</p>
+      <div class="brand-mark"><svg viewBox="0 0 24 24" width="60%" height="60%" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="17" r="1.6" fill="currentColor" stroke="none"/><path d="M7,13 A4,4 0 0 1 11,17"/><path d="M7,9 A8,8 0 0 1 15,17"/><path d="M7,5 A12,12 0 0 1 19,17"/></svg></div>
+      <p class="brand-name">Difundo</p>
     </div>
     <h1 class="display">Imprimer votre annonce en PDF</h1>
-    <p>Avant de déposer votre annonce dans Diffuz, transformez-la en PDF — ça ne prend que quelques secondes. Choisissez votre appareil ci-dessous.</p>
+    <p>Avant de déposer votre annonce dans Difundo, transformez-la en PDF — ça ne prend que quelques secondes. Choisissez votre appareil ci-dessous.</p>
   </header>
 
   <nav class="tabs" id="tabs">
@@ -105,7 +105,7 @@
       <div class="step"><div class="step-num">2</div><p>Dans la fenêtre qui s'ouvre, changez la <b>destination</b> pour <b>« Enregistrer au format PDF »</b></p></div>
       <div class="step"><div class="step-num">3</div><p>Cliquez sur <b>Enregistrer</b> et choisissez où garder le fichier</p></div>
     </div>
-    <div class="result"><span class="ico">✅</span> Vous avez un fichier PDF, prêt à déposer dans Diffuz</div>
+    <div class="result"><span class="ico">✅</span> Vous avez un fichier PDF, prêt à déposer dans Difundo</div>
   </section>
 
   <section class="panel" id="panel-android">
@@ -116,7 +116,7 @@
       <div class="step"><div class="step-num">2</div><p>Appuyez sur <b>Partager, exporter</b> → <b>Imprimer</b></p></div>
       <div class="step"><div class="step-num">3</div><p>En haut de l'écran, changez l'imprimante pour <b>« Enregistrer en PDF »</b>, puis appuyez sur l'icône de téléchargement</p></div>
     </div>
-    <div class="result"><span class="ico">✅</span> Vous avez un fichier PDF, prêt à déposer dans Diffuz</div>
+    <div class="result"><span class="ico">✅</span> Vous avez un fichier PDF, prêt à déposer dans Difundo</div>
   </section>
 
   <section class="panel" id="panel-ios">
@@ -129,10 +129,10 @@
       <div class="step"><div class="step-num">4</div><p>L'aperçu devient un vrai PDF plein écran. Appuyez sur <b>Partager</b> à nouveau → <b>« Enregistrer dans Fichiers »</b></p></div>
     </div>
     <div class="tip"><span class="ico">💡</span> L'étape du pincement surprend la première fois — normal, ce n'est pas un bouton visible. Une fois essayé, ça devient un réflexe.</div>
-    <div class="result"><span class="ico">✅</span> Vous avez un fichier PDF, prêt à déposer dans Diffuz</div>
+    <div class="result"><span class="ico">✅</span> Vous avez un fichier PDF, prêt à déposer dans Difundo</div>
   </section>
 
-  <p class="footer-note">Une fois votre PDF enregistré, ouvrez Diffuz et déposez-le avec vos photos — le reste est automatique.</p>
+  <p class="footer-note">Une fois votre PDF enregistré, ouvrez Difundo et déposez-le avec vos photos — le reste est automatique.</p>
 
 </div>
 
@@ -145,7 +145,7 @@
   function select(key){
     tabs.forEach(function(t){ t.classList.toggle('active', t.dataset.panel===key); });
     panels.forEach(function(p){ p.classList.toggle('active', p.id==='panel-'+key); });
-    try{ localStorage.setItem('diffuz_guide_tab', key); }catch(e){}
+    try{ localStorage.setItem('difundo_guide_tab', key); }catch(e){}
   }
 
   tabs.forEach(function(t){
@@ -157,7 +157,7 @@
     var ua = navigator.userAgent || '';
     if(/iPad|iPhone|iPod/.test(ua)){ initial = 'ios'; }
     else if(/Android/.test(ua)){ initial = 'android'; }
-    var saved = localStorage.getItem('diffuz_guide_tab');
+    var saved = localStorage.getItem('difundo_guide_tab');
     if(saved){ initial = saved; }
   }catch(e){}
   select(initial);

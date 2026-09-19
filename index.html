@@ -1,4 +1,4 @@
-<title>Diffuz</title>
+<title>Difundo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
@@ -219,8 +219,8 @@
   <header class="hero">
     <div class="brand-row">
       <div class="brand-mini">
-        <span class="brand-mini-mark">🪄</span>
-        <span class="brand-mini-name">Diffuz</span>
+        <span class="brand-mini-mark"><svg viewBox="0 0 24 24" width="60%" height="60%" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="17" r="1.6" fill="currentColor" stroke="none"/><path d="M7,13 A4,4 0 0 1 11,17"/><path d="M7,9 A8,8 0 0 1 15,17"/><path d="M7,5 A12,12 0 0 1 19,17"/></svg></span>
+        <span class="brand-mini-name">Difundo</span>
       </div>
       <div class="channels" id="channelPills">
         <div class="chan-pill on" data-chan="facebook" title="Connecté — prêt à publier"><span class="dot"></span>Facebook</div>
@@ -238,7 +238,7 @@
       </div>
     </div>
 
-    <p class="sub">Glissez la capture d'écran de votre annonce AutoScout24 et vos photos : Diffuz rédige et publie automatiquement sur les réseaux que vous avez choisis.</p>
+    <p class="sub">Glissez la capture d'écran de votre annonce AutoScout24 et vos photos : Difundo rédige et publie automatiquement sur les réseaux que vous avez choisis.</p>
   </header>
 
   <main class="flow-card">
@@ -389,7 +389,7 @@
 
   <section class="history">
     <h2 class="display">Historique</h2>
-    <p>Les dernières annonces diffusées avec Diffuz.</p>
+    <p>Les dernières annonces diffusées avec Difundo.</p>
     <div class="hist-grid" id="histGrid"></div>
   </section>
 
@@ -444,7 +444,7 @@
 
   function loadPageName(){
     try{
-      var saved = localStorage.getItem('diffuz_page_name');
+      var saved = localStorage.getItem('difundo_page_name');
       if(saved) state.pageName = saved;
     }catch(e){}
   }
@@ -462,16 +462,16 @@
           applyPageName();
         }
       }
-    }).catch(function(e){ console.warn('Diffuz: db load failed', e); });
+    }).catch(function(e){ console.warn('Difundo: db load failed', e); });
   }
 
   function savePageName(name){
-    try{ localStorage.setItem('diffuz_page_name', name); }catch(e){}
+    try{ localStorage.setItem('difundo_page_name', name); }catch(e){}
     if(!window.claude || !window.claude.use) return;
     window.claude.use('db').then(function(db){
       if(!db) return;
       return db.doc('settings/pageName').set({ value: name });
-    }).catch(function(e){ console.warn('Diffuz: db save failed', e); });
+    }).catch(function(e){ console.warn('Difundo: db save failed', e); });
   }
 
   function startEditPageName(){
@@ -638,10 +638,10 @@
   async function extractFromPdf(){
     if(!state.pdf) return { ok:false, reason:'no_pdf' };
     if(!window.claude || !window.claude.use) return { ok:false, reason:'no_runtime' };
-    var sample = await window.claude.use('sample').catch(function(e){ console.error('Diffuz: use(sample) failed', e); return null; });
+    var sample = await window.claude.use('sample').catch(function(e){ console.error('Difundo: use(sample) failed', e); return null; });
     if(!sample) return { ok:false, reason:'capability_unavailable' };
 
-    var text = await extractPdfText(state.pdf).catch(function(e){ console.error('Diffuz: PDF text extraction failed', e); return ''; });
+    var text = await extractPdfText(state.pdf).catch(function(e){ console.error('Difundo: PDF text extraction failed', e); return ''; });
     if(!text){ return { ok:false, reason:'pdf_no_text' }; }
 
     try{
@@ -655,11 +655,11 @@
         { modelTier: "default", cache: false }
       );
     }catch(e){
-      console.error('Diffuz: sample.json() rejected', e);
+      console.error('Difundo: sample.json() rejected', e);
       return { ok:false, reason: (e && e.code) || 'sample_error', detail: e && e.message };
     }
     if(!data || (!data.title && !data.price && !data.km && !data.desc)){
-      console.error('Diffuz: sample.json() returned empty data', data);
+      console.error('Difundo: sample.json() returned empty data', data);
       return { ok:false, reason:'empty_result', detail: data };
     }
     return {
@@ -684,7 +684,7 @@
     }, 700);
 
     var results = await Promise.all([
-      extractFromPdf().catch(function(e){ console.error('Diffuz: extractFromPdf threw', e); return { ok:false, reason:'unexpected_error', detail: e && e.message }; }),
+      extractFromPdf().catch(function(e){ console.error('Difundo: extractFromPdf threw', e); return { ok:false, reason:'unexpected_error', detail: e && e.message }; }),
       wait(1400)
     ]);
     var outcome = results[0];
@@ -722,7 +722,7 @@
     } else {
       s = samples[Math.floor(Math.random()*samples.length)];
       var reason = outcome && outcome.reason;
-      console.warn('Diffuz: repli sur exemple —', reason, outcome && outcome.detail);
+      console.warn('Difundo: repli sur exemple —', reason, outcome && outcome.detail);
       statusEl.textContent = '⚠️ Exemple affiché (pas de lecture réelle) — ' + (reasonLabels[reason] || reason || 'raison inconnue');
       statusEl.style.background = 'var(--accent-2-soft)';
       statusEl.style.color = 'var(--accent-2)';
@@ -914,7 +914,7 @@
 
   function loadHistoryCache(){
     try{
-      var raw = localStorage.getItem('diffuz_history');
+      var raw = localStorage.getItem('difundo_history');
       return raw ? JSON.parse(raw) : defaultHistory;
     }catch(e){ return defaultHistory; }
   }
@@ -932,7 +932,7 @@
           renderHistory();
         }
       }
-    }).catch(function(e){ console.warn('Diffuz: history db load failed', e); });
+    }).catch(function(e){ console.warn('Difundo: history db load failed', e); });
   }
 
   async function uploadHeroForHistory(){
@@ -946,7 +946,7 @@
       if(!assets) return null;
       var res = await assets.upload(state.files[0]);
       return (res && res.url) || null;
-    }catch(e){ console.warn('Diffuz: photo upload for history failed', e); return null; }
+    }catch(e){ console.warn('Difundo: photo upload for history failed', e); return null; }
   }
 
   async function saveHistory(chans){
@@ -972,12 +972,12 @@
 
   function persistHistory(hist){
     historyState = hist;
-    try{ localStorage.setItem('diffuz_history', JSON.stringify(hist)); }catch(e){}
+    try{ localStorage.setItem('difundo_history', JSON.stringify(hist)); }catch(e){}
     if(window.claude && window.claude.use){
       window.claude.use('db').then(function(db){
         if(!db) return;
         return db.doc('app/history').set({ items: hist });
-      }).catch(function(e){ console.warn('Diffuz: history db save failed', e); });
+      }).catch(function(e){ console.warn('Difundo: history db save failed', e); });
     }
     renderHistory();
   }
