@@ -124,6 +124,10 @@
 
   .toggles{display:flex;flex-direction:column;gap:10px;margin:18px 0 20px;padding:14px;background:var(--surface-alt);border-radius:var(--radius-sm);}
   .toggle-row{display:flex;align-items:center;justify-content:space-between;font-size:13.5px;font-weight:600;}
+  .type-toggle{display:flex;gap:8px;margin-bottom:18px;}
+  .type-btn{flex:1;border:1px solid var(--border);background:var(--surface);color:var(--ink-soft);border-radius:var(--radius-sm);padding:12px 14px;font-size:13.5px;font-weight:700;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease;}
+  .type-btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm);}
+  .type-btn.active{background:var(--accent-soft);color:var(--accent);border-color:var(--accent);}
   .freq-group{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
   .freq-btn{border:1px solid var(--border);background:var(--surface);color:var(--ink-soft);border-radius:999px;padding:8px 13px;font-size:12.5px;font-weight:700;cursor:pointer;transition:transform .15s ease;}
   .freq-btn:hover{transform:translateY(-1px);}
@@ -246,10 +250,14 @@
 
       <!-- STEP 1: dropzone -->
       <section id="stepDrop">
-        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Déposer le PDF de l'annonce et les photos">
-          <span class="dz-icon">📥</span>
-          <h3>Déposez le PDF imprimé de l'annonce + vos photos ici</h3>
-          <p>Sur la page de l'annonce : Ctrl+P (ou "Imprimer" depuis le menu Partager) → Enregistrer en PDF</p>
+        <div class="type-toggle" id="typeToggle">
+          <button type="button" class="type-btn active" data-type="listing">📄 Annonce complète</button>
+          <button type="button" class="type-btn" data-type="quick">📸 Post rapide</button>
+        </div>
+        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Déposer les fichiers">
+          <span class="dz-icon" id="dzIcon">📥</span>
+          <h3 id="dzTitle">Déposez le PDF imprimé de l'annonce + vos photos ici</h3>
+          <p id="dzSub">Sur la page de l'annonce : Ctrl+P (ou "Imprimer" depuis le menu Partager) → Enregistrer en PDF</p>
           <span class="dz-btn">Choisir des fichiers</span>
         </div>
         <input type="file" id="fileInput" accept="image/*,application/pdf" multiple>
@@ -270,11 +278,11 @@
         <input type="file" id="addPhotosInput" accept="image/*" multiple hidden>
         <div class="review-grid">
           <div>
-            <div class="field">
+            <div class="field" id="titleField">
               <label for="fTitle">Titre (marque / modèle)</label>
               <input id="fTitle" type="text">
             </div>
-            <div class="row-2">
+            <div class="row-2" id="priceKmRow">
               <div class="field">
                 <label for="fPrice">Prix</label>
                 <input id="fPrice" type="text">
@@ -285,7 +293,7 @@
               </div>
             </div>
             <div class="field">
-              <label for="fDesc">Description</label>
+              <label for="fDesc" id="descLabel">Description</label>
               <textarea id="fDesc"></textarea>
             </div>
 
@@ -295,7 +303,7 @@
               <div class="toggle-row">Site internet<div class="switch on" data-chan="site"></div></div>
             </div>
 
-            <div class="field">
+            <div class="field" id="freqField">
               <label>Republier automatiquement</label>
               <div class="freq-group" id="freqGroup">
                 <button type="button" class="freq-btn active" data-freq="once">Une fois</button>
@@ -379,7 +387,7 @@
     <div class="hist-grid" id="histGrid"></div>
   </section>
 
-  <p class="disclaimer"><b>Prototype de test.</b> Quand c'est possible (PDF déposé + autorisation Claude accordée dans ce navigateur), les champs sont réellement extraits par lecture automatique du PDF. Sinon, des données d'exemple illustrent le parcours (voir le cahier des charges, module de saisie). La fréquence de republication est enregistrée avec chaque annonce, mais la republication automatique elle-même n'a pas encore de moteur réel derrière (ça viendra avec le backend de planification, hors périmètre de ce prototype).</p>
+  <p class="disclaimer"><b>Prototype de test.</b> Quand c'est possible (PDF déposé + autorisation Claude accordée dans ce navigateur), les champs de l'annonce complète sont réellement extraits par lecture automatique du PDF ; le post rapide (photo + message) ne passe pas par cette lecture, il suit directement à l'écran de vérification. Sinon, des données d'exemple illustrent le parcours (voir le cahier des charges, module de saisie). La fréquence de republication est enregistrée avec chaque annonce, mais la republication automatique elle-même n'a pas encore de moteur réel derrière (ça viendra avec le backend de planification, hors périmètre de ce prototype).</p>
 
 </div>
 
@@ -400,7 +408,8 @@
     current: null,
     channels: {facebook:true, instagram:true, site:true},
     pageName: 'Garage Martin',
-    frequency: 'once'
+    frequency: 'once',
+    postType: 'listing' // 'listing' (annonce complète) | 'quick' (photo + petit message)
   };
 
   var FREQ_LABELS = {
@@ -493,6 +502,34 @@
   var stepDrop = el('stepDrop'), stepAnalyze = el('stepAnalyze'), stepReview = el('stepReview'), stepSuccess = el('stepSuccess');
   var dot1 = el('dot1'), dot2 = el('dot2'), dot3 = el('dot3'), stepTitle = el('stepTitle'), stepCount = el('stepCount');
 
+  function applyPostType(){
+    document.querySelectorAll('.type-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.type===state.postType); });
+    var isQuick = state.postType === 'quick';
+    el('dzIcon').textContent = isQuick ? '📸' : '📥';
+    el('dzTitle').textContent = isQuick ? 'Déposez une ou plusieurs photos' : 'Déposez le PDF imprimé de l\'annonce + vos photos ici';
+    el('dzSub').textContent = isQuick
+      ? 'Une photo de client, d\'atelier, d\'événement… tout ce qui mérite un post rapide, sans annonce complète.'
+      : 'Sur la page de l\'annonce : Ctrl+P (ou "Imprimer" depuis le menu Partager) → Enregistrer en PDF';
+    fileInput.accept = isQuick ? 'image/*' : 'image/*,application/pdf';
+    toggleFieldsForType();
+  }
+
+  function toggleFieldsForType(){
+    var isQuick = state.postType === 'quick';
+    el('titleField').hidden = isQuick;
+    el('priceKmRow').hidden = isQuick;
+    el('freqField').hidden = isQuick;
+    el('descLabel').textContent = isQuick ? 'Petit message' : 'Description';
+    el('fDesc').placeholder = isQuick ? 'Un grand merci à Julie pour sa confiance ! 🎉🚗' : '';
+  }
+
+  document.querySelectorAll('.type-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      state.postType = btn.dataset.type;
+      applyPostType();
+    });
+  });
+
   function setStep(n){
     stepDrop.hidden = n!==1;
     stepAnalyze.hidden = n!==1.5;
@@ -527,13 +564,43 @@
       return f.type.indexOf('image/')===0 || f.type==='application/pdf';
     });
     if(!all.length) return;
-    state.pdf = all.filter(function(f){ return f.type==='application/pdf'; })[0] || null;
     var photos = all.filter(function(f){ return f.type.indexOf('image/')===0; });
+
+    if(state.postType === 'quick'){
+      state.pdf = null;
+      state.files = photos;
+      try{ state.urls = photos.map(function(f){ return URL.createObjectURL(f); }); }catch(e){ state.urls = []; }
+      startQuickReview();
+      return;
+    }
+
+    state.pdf = all.filter(function(f){ return f.type==='application/pdf'; })[0] || null;
     state.files = photos;
     try{
       state.urls = photos.map(function(f){ return URL.createObjectURL(f); });
     }catch(e){ state.urls = []; }
     runAnalysis();
+  }
+
+  function startQuickReview(){
+    state.current = { title:'', price:'', km:'', desc:'', emoji:'📸' };
+    state.frequency = 'once';
+    document.querySelectorAll('.freq-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.freq==='once'); });
+
+    el('fTitle').value = '';
+    el('fPrice').value = '';
+    el('fKm').value = '';
+    el('fDesc').value = '';
+
+    var statusEl = el('extractStatus');
+    statusEl.textContent = '📸 Post rapide — ajoutez juste un petit message ci-dessous.';
+    statusEl.style.background = 'var(--surface-alt)';
+    statusEl.style.color = 'var(--ink-soft)';
+
+    toggleFieldsForType();
+    renderThumbs();
+    updatePreviews();
+    setStep(2);
   }
 
   var analyzeMsgs = ["Lecture du PDF imprimé…","Extraction du prix et du kilométrage…","Préparation des publications…"];
@@ -652,6 +719,7 @@
     }
     state.current = Object.assign({}, s);
 
+    toggleFieldsForType();
     renderThumbs();
 
     el('fTitle').value = s.title;
@@ -730,21 +798,33 @@
   }
 
   function updatePreviews(){
+    var isQuick = state.postType === 'quick';
     var title = el('fTitle').value, price = el('fPrice').value, km = el('fKm').value, desc = el('fDesc').value;
     var img = heroImageSrc();
     var pageName = state.pageName || 'Garage Martin';
     var handle = igHandle(pageName);
 
-    el('fbText').textContent = title + ' — ' + price + '\n' + km + '\n\n' + desc;
+    el('fbText').textContent = isQuick ? desc : (title + ' — ' + price + '\n' + km + '\n\n' + desc);
     if(img){ el('fbImg').src = img; el('fbImg').style.display='block'; } else { el('fbImg').style.display='none'; }
 
-    var tag = title.split(' ')[0];
-    el('igCaption').innerHTML = '<b>' + escapeHtml(handle) + '</b> ' + escapeHtml(title) + ' · ' + escapeHtml(price) + '<br>' + nl2br(desc) + '<br><span class="ig-tags">#' + escapeHtml(tag) + ' #occasion #' + escapeHtml(handle.replace(/\./g,'')) + '</span>';
+    if(isQuick){
+      el('igCaption').innerHTML = '<b>' + escapeHtml(handle) + '</b> ' + nl2br(desc);
+    } else {
+      var tag = title.split(' ')[0];
+      el('igCaption').innerHTML = '<b>' + escapeHtml(handle) + '</b> ' + escapeHtml(title) + ' · ' + escapeHtml(price) + '<br>' + nl2br(desc) + '<br><span class="ig-tags">#' + escapeHtml(tag) + ' #occasion #' + escapeHtml(handle.replace(/\./g,'')) + '</span>';
+    }
     if(img){ el('igImg').src = img; el('igImg').style.display='block'; } else { el('igImg').style.display='none'; }
 
-    el('siteTitle').textContent = title;
-    el('sitePrice').textContent = price;
-    el('siteSpecs').textContent = km + ' · Essence · Boîte manuelle';
+    if(isQuick){
+      el('siteTitle').textContent = desc.split('\n')[0].slice(0, 60) || 'Nouvelle publication';
+      el('sitePrice').hidden = true;
+      el('siteSpecs').textContent = '';
+    } else {
+      el('siteTitle').textContent = title;
+      el('sitePrice').hidden = false;
+      el('sitePrice').textContent = price;
+      el('siteSpecs').textContent = km + ' · Essence · Boîte manuelle';
+    }
     if(img){ el('siteImg').src = img; el('siteImg').style.display='block'; } else { el('siteImg').style.display='none'; }
   }
 
@@ -865,15 +945,17 @@
   }
 
   async function saveHistory(chans){
+    var isQuick = state.postType === 'quick';
     var entry = {
       id: Date.now() + '-' + Math.random().toString(36).slice(2, 7),
-      title: el('fTitle').value,
-      price: el('fPrice').value,
-      km: el('fKm').value,
+      type: state.postType,
+      title: isQuick ? '' : el('fTitle').value,
+      price: isQuick ? '' : el('fPrice').value,
+      km: isQuick ? '' : el('fKm').value,
       desc: el('fDesc').value,
       chans: chans,
-      emoji: (state.current && state.current.emoji) || '🚗',
-      frequency: state.frequency,
+      emoji: (state.current && state.current.emoji) || (isQuick ? '📸' : '🚗'),
+      frequency: isQuick ? 'once' : state.frequency,
       img: await uploadHeroForHistory()
     };
     var hist = historyState || loadHistoryCache();
@@ -910,11 +992,14 @@
     state.pdf = null;
     state.files = [];
     state.urls = h.img ? [h.img] : [];
+    state.postType = h.type === 'quick' ? 'quick' : 'listing';
     state.current = { title: h.title, price: h.price, km: h.km, desc: h.desc, emoji: h.emoji };
     state.frequency = h.frequency || 'once';
     state.channels.facebook = h.chans.indexOf('Facebook') !== -1;
     state.channels.instagram = h.chans.indexOf('Instagram') !== -1;
     state.channels.site = h.chans.indexOf('Site internet') !== -1;
+
+    document.querySelectorAll('.type-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.type===state.postType); });
 
     el('fTitle').value = h.title || '';
     el('fPrice').value = h.price || '';
@@ -928,6 +1013,8 @@
     document.querySelectorAll('.freq-btn').forEach(function(b){
       b.classList.toggle('active', b.dataset.freq === state.frequency);
     });
+
+    toggleFieldsForType();
 
     var statusEl = el('extractStatus');
     statusEl.textContent = '🔁 Fiche reprise depuis l\'historique — vérifiez avant de republier.';
@@ -947,9 +1034,10 @@
     hist.forEach(function(h){
       var card = document.createElement('div');
       card.className = 'hist-card';
+      var isQuick = h.type === 'quick';
       var media = h.img
         ? '<img class="hist-img" src="'+h.img+'" alt="">'
-        : '<div class="hist-ph">'+(h.emoji||'🚗')+'</div>';
+        : '<div class="hist-ph">'+(h.emoji||(isQuick?'📸':'🚗'))+'</div>';
       var recurring = h.frequency && h.frequency !== 'once';
       var freqRow = recurring
         ? '<div class="hist-chans" style="margin-top:6px;"><span class="hist-freq">🔁 '+(FREQ_LABELS[h.frequency]||h.frequency)+'</span>' +
@@ -958,10 +1046,14 @@
       var republishRow = h.id
         ? '<button class="hist-republish" data-republish-id="'+h.id+'">↺ Republier</button>'
         : '';
+      var titleLine = isQuick
+        ? escapeHtml((h.desc || 'Post rapide').slice(0, 40)) + ((h.desc||'').length > 40 ? '…' : '')
+        : h.title;
+      var metaLine = isQuick ? '📸 Post rapide' : h.price;
       card.innerHTML = media +
         '<div class="hist-body">' +
-          '<div class="hist-title">'+h.title+'</div>' +
-          '<div class="hist-meta">'+h.price+'</div>' +
+          '<div class="hist-title">'+titleLine+'</div>' +
+          '<div class="hist-meta">'+metaLine+'</div>' +
           '<div class="hist-chans">'+h.chans.map(function(c){return '<span class="hist-chip">'+c+'</span>';}).join('')+'</div>' +
           freqRow +
           republishRow +
@@ -978,6 +1070,7 @@
 
   loadPageName();
   applyPageName();
+  applyPostType();
   refreshPageNameFromDb();
   renderHistory();
   refreshHistoryFromDb();
