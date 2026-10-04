@@ -1,4 +1,7 @@
 <title>Difup</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2F6FE0">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
@@ -1074,6 +1077,42 @@
     });
   }
 
+  // ---- PWA : installation + réception du partage Android (sans effet dans l'aperçu Artifact) ----
+  function registerServiceWorker(){
+    if(!('serviceWorker' in navigator)) return;
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('service-worker.js').catch(function(e){
+        console.warn('Difup: enregistrement du service worker impossible ici', e);
+      });
+    });
+  }
+
+  async function checkSharedContent(){
+    if(!/[?&]shared=1/.test(location.search)) return;
+    if(!('caches' in window)) return;
+    try{
+      var cache = await caches.open('difup-shared-v1');
+      var metaResp = await cache.match('shared-meta');
+      if(!metaResp) return;
+      var meta = await metaResp.json();
+      var files = [];
+      for(var i = 0; i < meta.fileCount; i++){
+        var fileResp = await cache.match('shared-file-' + i);
+        if(fileResp){
+          var blob = await fileResp.blob();
+          var ext = blob.type === 'application/pdf' ? '.pdf' : '';
+          files.push(new File([blob], 'partage-' + i + ext, { type: blob.type }));
+        }
+      }
+      await cache.delete('shared-meta');
+      for(var j = 0; j < meta.fileCount; j++){ await cache.delete('shared-file-' + j); }
+      history.replaceState(null, '', location.pathname);
+      if(files.length){ handleFiles(files); }
+    }catch(e){
+      console.warn('Difup: récupération du contenu partagé impossible', e);
+    }
+  }
+
   loadPageName();
   applyPageName();
   applyPostType();
@@ -1081,5 +1120,7 @@
   renderHistory();
   refreshHistoryFromDb();
   setStep(1);
+  registerServiceWorker();
+  checkSharedContent();
 })();
 </script>
