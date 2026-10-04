@@ -1,4 +1,4 @@
-<title>Difun</title>
+<title>Difup</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
@@ -218,7 +218,7 @@
   <header class="hero">
     <div class="brand-row">
       <div class="brand-mini">
-        <svg class="brand-mini-logo" viewBox="0 12 116 54" role="img" aria-label="Difun"><defs><linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2F6FE0"/><stop offset="100%" stop-color="#2F9E7C"/></linearGradient></defs><g transform="translate(-13,7)"><rect x="15" y="15" width="10" height="34" rx="5" fill="url(#logoGrad)"/><path d="M20,15 A17,17 0 0 1 36.17,37.25" fill="none" stroke="url(#logoGrad)" stroke-width="10" stroke-linecap="round"/><circle cx="35.05" cy="42.93" r="3.4" fill="url(#logoGrad)"/><circle cx="32.68" cy="48.23" r="2.4" fill="url(#logoGrad)"/><circle cx="29.44" cy="53.19" r="1.6" fill="url(#logoGrad)"/></g><text x="34" y="56" font-family="Manrope, ui-sans-serif, system-ui, sans-serif" font-weight="800" font-size="44" letter-spacing="0.5" fill="currentColor">ifun</text></svg>
+        <svg class="brand-mini-logo" viewBox="0 12 128 60" role="img" aria-label="Difup"><defs><linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2F6FE0"/><stop offset="100%" stop-color="#2F9E7C"/></linearGradient></defs><g transform="translate(-13,7)"><rect x="15" y="15" width="10" height="34" rx="5" fill="url(#logoGrad)"/><path d="M20,15 A17,17 0 0 1 36.17,37.25" fill="none" stroke="url(#logoGrad)" stroke-width="10" stroke-linecap="round"/><circle cx="35.05" cy="42.93" r="3.4" fill="url(#logoGrad)"/><circle cx="32.68" cy="48.23" r="2.4" fill="url(#logoGrad)"/><circle cx="29.44" cy="53.19" r="1.6" fill="url(#logoGrad)"/></g><text x="34" y="56" font-family="Manrope, ui-sans-serif, system-ui, sans-serif" font-weight="800" font-size="44" letter-spacing="0.5" fill="currentColor">ifup</text></svg>
       </div>
       <div class="channels" id="channelPills">
         <div class="chan-pill on" data-chan="facebook" title="Connecté — prêt à publier"><span class="dot"></span>Facebook</div>
@@ -236,7 +236,7 @@
       </div>
     </div>
 
-    <p class="sub">Glissez la capture d'écran de votre annonce AutoScout24 et vos photos : Difun rédige et publie automatiquement sur les réseaux que vous avez choisis.</p>
+    <p class="sub">Glissez la capture d'écran de votre annonce AutoScout24 et vos photos : Difup rédige et publie automatiquement sur les réseaux que vous avez choisis.</p>
   </header>
 
   <main class="flow-card">
@@ -387,7 +387,7 @@
 
   <section class="history">
     <h2 class="display">Historique</h2>
-    <p>Les dernières annonces diffusées avec Difun.</p>
+    <p>Les dernières annonces diffusées avec Difup.</p>
     <div class="hist-grid" id="histGrid"></div>
   </section>
 
@@ -442,7 +442,7 @@
 
   function loadPageName(){
     try{
-      var saved = localStorage.getItem('difun_page_name');
+      var saved = localStorage.getItem('difup_page_name');
       if(saved) state.pageName = saved;
     }catch(e){}
   }
@@ -460,16 +460,16 @@
           applyPageName();
         }
       }
-    }).catch(function(e){ console.warn('Difun: db load failed', e); });
+    }).catch(function(e){ console.warn('Difup: db load failed', e); });
   }
 
   function savePageName(name){
-    try{ localStorage.setItem('difun_page_name', name); }catch(e){}
+    try{ localStorage.setItem('difup_page_name', name); }catch(e){}
     if(!window.claude || !window.claude.use) return;
     window.claude.use('db').then(function(db){
       if(!db) return;
       return db.doc('settings/pageName').set({ value: name });
-    }).catch(function(e){ console.warn('Difun: db save failed', e); });
+    }).catch(function(e){ console.warn('Difup: db save failed', e); });
   }
 
   function startEditPageName(){
@@ -636,10 +636,10 @@
   async function extractFromPdf(){
     if(!state.pdf) return { ok:false, reason:'no_pdf' };
     if(!window.claude || !window.claude.use) return { ok:false, reason:'no_runtime' };
-    var sample = await window.claude.use('sample').catch(function(e){ console.error('Difun: use(sample) failed', e); return null; });
+    var sample = await window.claude.use('sample').catch(function(e){ console.error('Difup: use(sample) failed', e); return null; });
     if(!sample) return { ok:false, reason:'capability_unavailable' };
 
-    var text = await extractPdfText(state.pdf).catch(function(e){ console.error('Difun: PDF text extraction failed', e); return ''; });
+    var text = await extractPdfText(state.pdf).catch(function(e){ console.error('Difup: PDF text extraction failed', e); return ''; });
     if(!text){ return { ok:false, reason:'pdf_no_text' }; }
 
     try{
@@ -653,11 +653,11 @@
         { modelTier: "default", cache: false }
       );
     }catch(e){
-      console.error('Difun: sample.json() rejected', e);
+      console.error('Difup: sample.json() rejected', e);
       return { ok:false, reason: (e && e.code) || 'sample_error', detail: e && e.message };
     }
     if(!data || (!data.title && !data.price && !data.km && !data.desc)){
-      console.error('Difun: sample.json() returned empty data', data);
+      console.error('Difup: sample.json() returned empty data', data);
       return { ok:false, reason:'empty_result', detail: data };
     }
     return {
@@ -682,7 +682,7 @@
     }, 700);
 
     var results = await Promise.all([
-      extractFromPdf().catch(function(e){ console.error('Difun: extractFromPdf threw', e); return { ok:false, reason:'unexpected_error', detail: e && e.message }; }),
+      extractFromPdf().catch(function(e){ console.error('Difup: extractFromPdf threw', e); return { ok:false, reason:'unexpected_error', detail: e && e.message }; }),
       wait(1400)
     ]);
     var outcome = results[0];
@@ -720,7 +720,7 @@
     } else {
       s = samples[Math.floor(Math.random()*samples.length)];
       var reason = outcome && outcome.reason;
-      console.warn('Difun: repli sur exemple —', reason, outcome && outcome.detail);
+      console.warn('Difup: repli sur exemple —', reason, outcome && outcome.detail);
       statusEl.textContent = '⚠️ Exemple affiché (pas de lecture réelle) — ' + (reasonLabels[reason] || reason || 'raison inconnue');
       statusEl.style.background = 'var(--accent-2-soft)';
       statusEl.style.color = 'var(--accent-2)';
@@ -912,7 +912,7 @@
 
   function loadHistoryCache(){
     try{
-      var raw = localStorage.getItem('difun_history');
+      var raw = localStorage.getItem('difup_history');
       return raw ? JSON.parse(raw) : defaultHistory;
     }catch(e){ return defaultHistory; }
   }
@@ -930,7 +930,7 @@
           renderHistory();
         }
       }
-    }).catch(function(e){ console.warn('Difun: history db load failed', e); });
+    }).catch(function(e){ console.warn('Difup: history db load failed', e); });
   }
 
   async function uploadHeroForHistory(){
@@ -944,7 +944,7 @@
       if(!assets) return null;
       var res = await assets.upload(state.files[0]);
       return (res && res.url) || null;
-    }catch(e){ console.warn('Difun: photo upload for history failed', e); return null; }
+    }catch(e){ console.warn('Difup: photo upload for history failed', e); return null; }
   }
 
   async function saveHistory(chans){
@@ -970,12 +970,12 @@
 
   function persistHistory(hist){
     historyState = hist;
-    try{ localStorage.setItem('difun_history', JSON.stringify(hist)); }catch(e){}
+    try{ localStorage.setItem('difup_history', JSON.stringify(hist)); }catch(e){}
     if(window.claude && window.claude.use){
       window.claude.use('db').then(function(db){
         if(!db) return;
         return db.doc('app/history').set({ items: hist });
-      }).catch(function(e){ console.warn('Difun: history db save failed', e); });
+      }).catch(function(e){ console.warn('Difup: history db save failed', e); });
     }
     renderHistory();
   }
