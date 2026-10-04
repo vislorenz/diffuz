@@ -12,5 +12,5 @@
     <circle cx="32.68" cy="48.23" r="2.4" fill="url(#g)"/>
     <circle cx="29.44" cy="53.19" r="1.6" fill="url(#g)"/>
   </g>
-  <text x="33" y="56" font-family="Manrope, Arial, Helvetica, sans-serif" font-weight="800" font-size="44" letter-spacing="-1" fill="#16233A">ifup</text>
+  <text x="33" y="56" font-family="Manrope, Arial, Helvetica, sans-serif" font-weight="800" font-size="44" letter-spacing="-1" fill="url(#g)">ifup</text>
 </svg>
