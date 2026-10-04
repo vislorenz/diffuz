@@ -12,7 +12,7 @@
     <circle cx="32.68" cy="48.23" r="2.4" fill="url(#g)"/>
     <circle cx="29.44" cy="53.19" r="1.6" fill="url(#g)"/>
   </g>
-  <text x="33" y="56" font-family="Manrope, Arial, Helvetica, sans-serif" font-weight="800" font-size="44" letter-spacing="-1" fill="url(#g)">if</text>
+  <text x="33" y="56" font-family="Manrope, Arial, Helvetica, sans-serif" font-weight="800" font-size="44" letter-spacing="-1" fill="#16233A">if</text>
   <path d="M62,15 L62,43 A13,13 0 0 0 88,43 L88,15" fill="none" stroke="url(#g)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
   <text x="93" y="56" font-family="Manrope, Arial, Helvetica, sans-serif" font-weight="800" font-size="44" letter-spacing="-1" fill="url(#g)">p</text>
 </svg>
