@@ -110,5 +110,6 @@ c-8 -5 -10 -10 -5 -10 6 0 17 5 25 10 8 5 11 10 5 10 -5 0 -17 -5 -25 -10z"/></g>
 12 -777 14 -783 3z M4656 1335 c-9 -26 -7 -32 5 -12 6 10 9 21 6 23 -2 3 -7
 -2 -11 -11z M4620 1255 c-6 -8 -10 -19 -8 -26 2 -6 9 0 16 15 13 29 10 33 -8
 11z"/></g>
-<text x="700" y="330" font-family="Manrope, Arial, Helvetica, sans-serif" font-weight="800" font-size="300" letter-spacing="-4" fill="#0B2545">Dif<tspan fill="url(#upgrad)">Up</tspan></text>
+<style>.dif-text{fill:#0B2545;}@media (prefers-color-scheme: dark){.dif-text{fill:#F2F6FB;}}</style>
+<text x="700" y="330" font-family="Manrope, Arial, Helvetica, sans-serif" font-weight="800" font-size="300" letter-spacing="-4"><tspan class="dif-text">Dif</tspan><tspan fill="url(#upgrad)">Up</tspan></text>
 </svg>
