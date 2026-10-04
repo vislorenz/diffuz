@@ -1,13 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="512" height="512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 15 52 44" width="520" height="440" role="img" aria-label="Difup">
   <defs>
     <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#2F6FE0"/>
       <stop offset="100%" stop-color="#2F9E7C"/>
     </linearGradient>
   </defs>
-  <rect x="15" y="15" width="10" height="34" rx="5" fill="url(#g)"/>
-  <path d="M20,15 A17,17 0 0 1 36.17,37.25" fill="none" stroke="url(#g)" stroke-width="10" stroke-linecap="round"/>
-  <circle cx="35.05" cy="42.93" r="3.4" fill="url(#g)"/>
-  <circle cx="32.68" cy="48.23" r="2.4" fill="url(#g)"/>
-  <circle cx="29.44" cy="53.19" r="1.6" fill="url(#g)"/>
+  <g transform="translate(-13,7)">
+    <rect x="15" y="15" width="10" height="34" rx="5" fill="url(#g)"/>
+    <path d="M20,15 A17,17 0 0 1 36.17,37.25" fill="none" stroke="url(#g)" stroke-width="10" stroke-linecap="round"/>
+  </g>
+  <polygon points="36,18.5 36,29.5 48.5,24" fill="#2F6FE0"/>
+  <polygon points="36,35.5 36,46.5 48.5,41" fill="#2F9E7C"/>
 </svg>
