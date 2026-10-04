@@ -12,6 +12,6 @@
   <polygon points="36,18.5 36,29.5 48.5,24" fill="#2F6FE0"/>
   <polygon points="36,35.5 36,46.5 48.5,41" fill="#2F9E7C"/>
   <text x="54" y="56" font-family="Manrope, Arial, Helvetica, sans-serif" font-weight="800" font-size="44" letter-spacing="-1" fill="#16233A">if</text>
-  <path d="M83,15 L83,43 A13,13 0 0 0 109,43 L109,15" fill="none" stroke="url(#g)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="114" y="56" font-family="Manrope, Arial, Helvetica, sans-serif" font-weight="800" font-size="44" letter-spacing="-1" fill="url(#g)">p</text>
+  <path d="M84,24 L84,46 A10,10 0 0 0 104,46 L104,24" fill="none" stroke="url(#g)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="109" y="56" font-family="Manrope, Arial, Helvetica, sans-serif" font-weight="800" font-size="44" letter-spacing="-1" fill="url(#g)">p</text>
 </svg>
