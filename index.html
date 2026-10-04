@@ -79,6 +79,8 @@
   .chan-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--ink-faint);}
   .chan-pill.on .dot{background:var(--accent);}
   .chan-pill.on{color:var(--ink);}
+  .guide-link{cursor:pointer;text-decoration:none;color:var(--accent);border-color:var(--accent-soft);background:var(--accent-soft);transition:transform .15s ease, box-shadow .15s ease;}
+  .guide-link:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm);}
   .page-identity{position:relative;z-index:1;margin:26px 0 8px;cursor:pointer;display:inline-block;}
   .page-identity-tag{display:block;font-size:12px;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
   .page-identity-row{display:flex;align-items:center;gap:10px;}
@@ -224,6 +226,7 @@
         <div class="chan-pill on" data-chan="facebook" title="Connecté — prêt à publier"><span class="dot"></span>Facebook</div>
         <div class="chan-pill on" data-chan="instagram" title="Connecté — prêt à publier"><span class="dot"></span>Instagram</div>
         <div class="chan-pill on" data-chan="site" title="Connecté — prêt à publier"><span class="dot"></span>Site internet</div>
+        <a class="chan-pill guide-link" href="https://claude.ai/artifact/4e4Rqm7b35YmhrUHn6dYNW" target="_blank" rel="noopener">📖 Guide</a>
       </div>
     </div>
 

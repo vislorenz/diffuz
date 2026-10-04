@@ -77,6 +77,18 @@
   .result .ico{font-size:16px;}
 
   .footer-note{font-size:12px;color:var(--ink-faint);text-align:center;line-height:1.6;}
+
+  .overview-title{font-size:16px;margin:0 0 12px;}
+  .ov-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  @media (max-width:520px){.ov-grid{grid-template-columns:1fr;}}
+  .ov-card{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;}
+  .ov-card .ov-ico{font-size:20px;flex:none;}
+  .ov-card b{font-size:13.5px;display:block;margin-bottom:3px;}
+  .ov-card p{margin:0;font-size:12.5px;color:var(--ink-soft);line-height:1.5;}
+
+  .section-title{font-size:17px;margin:0 0 4px;}
+  .section-sub{color:var(--ink-soft);font-size:13px;margin:0 0 16px;}
+  .steps-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:22px;}
 </style>
 
 <div class="wrap">
@@ -85,52 +97,89 @@
     <div class="brand">
       <img class="brand-logo" src="brand/logo-lockup.svg" alt="Difup">
     </div>
-    <h1 class="display">Imprimer votre annonce en PDF</h1>
-    <p>Avant de déposer votre annonce dans Difup, transformez-la en PDF — ça ne prend que quelques secondes. Choisissez votre appareil ci-dessous.</p>
+    <h1 class="display">Guide Difup</h1>
+    <p>Tout ce qu'il faut savoir pour publier votre première annonce, étape par étape — selon l'appareil que vous utilisez.</p>
   </header>
 
-  <nav class="tabs" id="tabs">
-    <div class="tab" data-panel="pc">💻 Ordinateur</div>
-    <div class="tab" data-panel="android">🤖 Android</div>
-    <div class="tab" data-panel="ios">🍎 iPhone / iPad</div>
-  </nav>
-
-  <section class="panel" id="panel-pc">
-    <h2 class="display">Sur ordinateur (Windows ou Mac)</h2>
-    <p class="sub">Fonctionne à l'identique sur Chrome, Firefox, Edge ou Safari.</p>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><p>Sur la page de votre annonce, appuyez sur <kbd>Ctrl</kbd> + <kbd>P</kbd> (ou <kbd>Cmd</kbd> + <kbd>P</kbd> sur Mac)</p></div>
-      <div class="step"><div class="step-num">2</div><p>Dans la fenêtre qui s'ouvre, changez la <b>destination</b> pour <b>« Enregistrer au format PDF »</b></p></div>
-      <div class="step"><div class="step-num">3</div><p>Cliquez sur <b>Enregistrer</b> et choisissez où garder le fichier</p></div>
+  <section class="overview">
+    <h2 class="display overview-title">Le principe en 4 étapes</h2>
+    <div class="ov-grid">
+      <div class="ov-card"><span class="ov-ico">📄</span><div><b>1. Imprimer en PDF</b><p>Transformez votre annonce AutoScout24 en PDF (voir ci-dessous selon votre appareil)</p></div></div>
+      <div class="ov-card"><span class="ov-ico">📥</span><div><b>2. Déposer</b><p>Glissez le PDF et vos photos dans Difup</p></div></div>
+      <div class="ov-card"><span class="ov-ico">✏️</span><div><b>3. Vérifier</b><p>Relisez les champs détectés et choisissez vos réseaux</p></div></div>
+      <div class="ov-card"><span class="ov-ico">🚀</span><div><b>4. Publier</b><p>Un clic, et c'est envoyé partout à la fois</p></div></div>
     </div>
-    <div class="result"><span class="ico">✅</span> Vous avez un fichier PDF, prêt à déposer dans Difup</div>
   </section>
 
-  <section class="panel" id="panel-android">
-    <h2 class="display">Sur Android</h2>
-    <p class="sub">Avec Chrome, déjà installé sur la plupart des téléphones Android.</p>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><p>Ouvrez l'annonce dans Chrome, puis appuyez sur <b>⋮</b> (les trois points en haut à droite)</p></div>
-      <div class="step"><div class="step-num">2</div><p>Appuyez sur <b>Partager, exporter</b> → <b>Imprimer</b></p></div>
-      <div class="step"><div class="step-num">3</div><p>En haut de l'écran, changez l'imprimante pour <b>« Enregistrer en PDF »</b>, puis appuyez sur l'icône de téléchargement</p></div>
-    </div>
-    <div class="result"><span class="ico">✅</span> Vous avez un fichier PDF, prêt à déposer dans Difup</div>
+  <section>
+    <h2 class="display section-title">Étape 1 — Imprimer votre annonce en PDF</h2>
+    <p class="section-sub">Choisissez votre appareil : la manipulation diffère légèrement selon Windows, Mac, Android ou iPhone/iPad.</p>
+
+    <nav class="tabs" id="tabs">
+      <div class="tab" data-panel="windows">🖥️ Windows</div>
+      <div class="tab" data-panel="mac">⌨️ Mac</div>
+      <div class="tab" data-panel="android">🤖 Android</div>
+      <div class="tab" data-panel="ios">🍎 iPhone / iPad</div>
+    </nav>
+
+    <section class="panel" id="panel-windows">
+      <h2 class="display">Sur Windows</h2>
+      <p class="sub">Fonctionne à l'identique sur Chrome, Firefox ou Edge.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><p>Sur la page de votre annonce, appuyez sur <kbd>Ctrl</kbd> + <kbd>P</kbd></p></div>
+        <div class="step"><div class="step-num">2</div><p>Dans la fenêtre qui s'ouvre, changez la <b>destination</b> pour <b>« Enregistrer au format PDF »</b></p></div>
+        <div class="step"><div class="step-num">3</div><p>Cliquez sur <b>Enregistrer</b> et choisissez où garder le fichier</p></div>
+      </div>
+      <div class="result"><span class="ico">✅</span> Vous avez un fichier PDF, prêt à déposer dans Difup</div>
+    </section>
+
+    <section class="panel" id="panel-mac">
+      <h2 class="display">Sur Mac</h2>
+      <p class="sub">Avec Safari ou Chrome.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><p>Sur la page de votre annonce, appuyez sur <kbd>Cmd</kbd> + <kbd>P</kbd></p></div>
+        <div class="step"><div class="step-num">2</div><p>Sur <b>Safari</b> : cliquez sur le bouton <b>PDF</b> en bas à gauche de la fenêtre, puis <b>« Enregistrer au format PDF »</b>.<br>Sur <b>Chrome</b> : changez la <b>destination</b> pour <b>« Enregistrer au format PDF »</b>, comme sur Windows</p></div>
+        <div class="step"><div class="step-num">3</div><p>Cliquez sur <b>Enregistrer</b> et choisissez où garder le fichier</p></div>
+      </div>
+      <div class="result"><span class="ico">✅</span> Vous avez un fichier PDF, prêt à déposer dans Difup</div>
+    </section>
+
+    <section class="panel" id="panel-android">
+      <h2 class="display">Sur Android</h2>
+      <p class="sub">Avec Chrome, déjà installé sur la plupart des téléphones Android.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><p>Ouvrez l'annonce dans Chrome, puis appuyez sur <b>⋮</b> (les trois points en haut à droite)</p></div>
+        <div class="step"><div class="step-num">2</div><p>Appuyez sur <b>Partager, exporter</b> → <b>Imprimer</b></p></div>
+        <div class="step"><div class="step-num">3</div><p>En haut de l'écran, changez l'imprimante pour <b>« Enregistrer en PDF »</b>, puis appuyez sur l'icône de téléchargement</p></div>
+      </div>
+      <div class="result"><span class="ico">✅</span> Vous avez un fichier PDF, prêt à déposer dans Difup</div>
+    </section>
+
+    <section class="panel" id="panel-ios">
+      <h2 class="display">Sur iPhone / iPad</h2>
+      <p class="sub">Avec Safari. Apple cache un peu l'option, voici comment la trouver.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><p>Ouvrez l'annonce dans Safari, puis appuyez sur <b>Partager</b> (le carré avec la flèche)</p></div>
+        <div class="step"><div class="step-num">2</div><p>Faites défiler la liste et cherchez <b>« Créer un PDF »</b></p></div>
+        <div class="step"><div class="step-num">3</div><p>Si vous ne la voyez pas : appuyez sur <b>Imprimer</b>, puis <b>pincez l'aperçu avec deux doigts</b> comme pour zoomer une photo</p></div>
+        <div class="step"><div class="step-num">4</div><p>L'aperçu devient un vrai PDF plein écran. Appuyez sur <b>Partager</b> à nouveau → <b>« Enregistrer dans Fichiers »</b></p></div>
+      </div>
+      <div class="tip"><span class="ico">💡</span> L'étape du pincement surprend la première fois — normal, ce n'est pas un bouton visible. Une fois essayé, ça devient un réflexe.</div>
+      <div class="result"><span class="ico">✅</span> Vous avez un fichier PDF, prêt à déposer dans Difup</div>
+    </section>
   </section>
 
-  <section class="panel" id="panel-ios">
-    <h2 class="display">Sur iPhone / iPad</h2>
-    <p class="sub">Avec Safari. Apple cache un peu l'option, voici comment la trouver.</p>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><p>Ouvrez l'annonce dans Safari, puis appuyez sur <b>Partager</b> (le carré avec la flèche)</p></div>
-      <div class="step"><div class="step-num">2</div><p>Faites défiler la liste et cherchez <b>« Créer un PDF »</b></p></div>
-      <div class="step"><div class="step-num">3</div><p>Si vous ne la voyez pas : appuyez sur <b>Imprimer</b>, puis <b>pincez l'aperçu avec deux doigts</b> comme pour zoomer une photo</p></div>
-      <div class="step"><div class="step-num">4</div><p>L'aperçu devient un vrai PDF plein écran. Appuyez sur <b>Partager</b> à nouveau → <b>« Enregistrer dans Fichiers »</b></p></div>
+  <section>
+    <h2 class="display section-title">Étapes 2 à 4 — Utiliser Difup</h2>
+    <p class="section-sub">Identique quel que soit votre appareil, une fois le PDF en main.</p>
+    <div class="steps steps-card">
+      <div class="step"><div class="step-num">2</div><p>Ouvrez Difup, puis <b>déposez le PDF et vos photos</b> dans la zone prévue (ou choisissez « Post rapide » pour une simple photo avec un message)</p></div>
+      <div class="step"><div class="step-num">3</div><p>Les champs se remplissent automatiquement. <b>Relisez-les</b>, corrigez si besoin, et choisissez les réseaux (Facebook, Instagram, Site) ainsi que la fréquence de republication</p></div>
+      <div class="step"><div class="step-num">4</div><p>Appuyez sur <b>Publier maintenant</b> — l'annonce part sur tous les réseaux choisis en une fois. Vous la retrouvez ensuite dans l'<b>historique</b>, avec un bouton pour la republier si besoin</p></div>
     </div>
-    <div class="tip"><span class="ico">💡</span> L'étape du pincement surprend la première fois — normal, ce n'est pas un bouton visible. Une fois essayé, ça devient un réflexe.</div>
-    <div class="result"><span class="ico">✅</span> Vous avez un fichier PDF, prêt à déposer dans Difup</div>
   </section>
 
-  <p class="footer-note">Une fois votre PDF enregistré, ouvrez Difup et déposez-le avec vos photos — le reste est automatique.</p>
+  <p class="footer-note">Un doute en cours de route ? Revenez sur ce guide à tout moment depuis le lien « Guide » dans Difup.</p>
 
 </div>
 
@@ -150,11 +199,12 @@
     t.addEventListener('click', function(){ select(t.dataset.panel); });
   });
 
-  var initial = 'pc';
+  var initial = 'windows';
   try{
     var ua = navigator.userAgent || '';
     if(/iPad|iPhone|iPod/.test(ua)){ initial = 'ios'; }
     else if(/Android/.test(ua)){ initial = 'android'; }
+    else if(/Macintosh|Mac OS X/.test(ua) && !/Windows/.test(ua)){ initial = 'mac'; }
     var saved = localStorage.getItem('difup_guide_tab');
     if(saved){ initial = saved; }
   }catch(e){}
