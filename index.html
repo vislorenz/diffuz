@@ -1,4 +1,4 @@
-<title>Difup</title>
+<title>Diffup</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#2F6FE0">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -223,7 +223,7 @@
   <header class="hero">
     <div class="brand-row">
       <div class="brand-mini">
-        <img class="brand-mini-logo" src="brand/logo-lockup.svg" alt="Difup">
+        <img class="brand-mini-logo" src="brand/logo-lockup.svg" alt="Diffup">
       </div>
       <div class="channels" id="channelPills">
         <div class="chan-pill on" data-chan="facebook" title="Connecté — prêt à publier"><span class="dot"></span>Facebook</div>
@@ -242,7 +242,7 @@
       </div>
     </div>
 
-    <p class="sub">Glissez la capture d'écran de votre annonce AutoScout24 et vos photos : Difup rédige et publie automatiquement sur les réseaux que vous avez choisis.</p>
+    <p class="sub">Glissez la capture d'écran de votre annonce AutoScout24 et vos photos : Diffup rédige et publie automatiquement sur les réseaux que vous avez choisis.</p>
   </header>
 
   <main class="flow-card">
@@ -393,7 +393,7 @@
 
   <section class="history">
     <h2 class="display">Historique</h2>
-    <p>Les dernières annonces diffusées avec Difup.</p>
+    <p>Les dernières annonces diffusées avec Diffup.</p>
     <div class="hist-grid" id="histGrid"></div>
   </section>
 
@@ -448,7 +448,8 @@
 
   function loadPageName(){
     try{
-      var saved = localStorage.getItem('difup_page_name');
+      var saved = localStorage.getItem('diffup_page_name');
+      if(!saved) saved = localStorage.getItem('difup_page_name'); // migration depuis l'ancien nom "Difup"
       if(saved) state.pageName = saved;
     }catch(e){}
   }
@@ -466,16 +467,16 @@
           applyPageName();
         }
       }
-    }).catch(function(e){ console.warn('Difup: db load failed', e); });
+    }).catch(function(e){ console.warn('Diffup: db load failed', e); });
   }
 
   function savePageName(name){
-    try{ localStorage.setItem('difup_page_name', name); }catch(e){}
+    try{ localStorage.setItem('diffup_page_name', name); }catch(e){}
     if(!window.claude || !window.claude.use) return;
     window.claude.use('db').then(function(db){
       if(!db) return;
       return db.doc('settings/pageName').set({ value: name });
-    }).catch(function(e){ console.warn('Difup: db save failed', e); });
+    }).catch(function(e){ console.warn('Diffup: db save failed', e); });
   }
 
   function startEditPageName(){
@@ -642,10 +643,10 @@
   async function extractFromPdf(){
     if(!state.pdf) return { ok:false, reason:'no_pdf' };
     if(!window.claude || !window.claude.use) return { ok:false, reason:'no_runtime' };
-    var sample = await window.claude.use('sample').catch(function(e){ console.error('Difup: use(sample) failed', e); return null; });
+    var sample = await window.claude.use('sample').catch(function(e){ console.error('Diffup: use(sample) failed', e); return null; });
     if(!sample) return { ok:false, reason:'capability_unavailable' };
 
-    var text = await extractPdfText(state.pdf).catch(function(e){ console.error('Difup: PDF text extraction failed', e); return ''; });
+    var text = await extractPdfText(state.pdf).catch(function(e){ console.error('Diffup: PDF text extraction failed', e); return ''; });
     if(!text){ return { ok:false, reason:'pdf_no_text' }; }
 
     try{
@@ -659,11 +660,11 @@
         { modelTier: "default", cache: false }
       );
     }catch(e){
-      console.error('Difup: sample.json() rejected', e);
+      console.error('Diffup: sample.json() rejected', e);
       return { ok:false, reason: (e && e.code) || 'sample_error', detail: e && e.message };
     }
     if(!data || (!data.title && !data.price && !data.km && !data.desc)){
-      console.error('Difup: sample.json() returned empty data', data);
+      console.error('Diffup: sample.json() returned empty data', data);
       return { ok:false, reason:'empty_result', detail: data };
     }
     return {
@@ -688,7 +689,7 @@
     }, 700);
 
     var results = await Promise.all([
-      extractFromPdf().catch(function(e){ console.error('Difup: extractFromPdf threw', e); return { ok:false, reason:'unexpected_error', detail: e && e.message }; }),
+      extractFromPdf().catch(function(e){ console.error('Diffup: extractFromPdf threw', e); return { ok:false, reason:'unexpected_error', detail: e && e.message }; }),
       wait(1400)
     ]);
     var outcome = results[0];
@@ -726,7 +727,7 @@
     } else {
       s = samples[Math.floor(Math.random()*samples.length)];
       var reason = outcome && outcome.reason;
-      console.warn('Difup: repli sur exemple —', reason, outcome && outcome.detail);
+      console.warn('Diffup: repli sur exemple —', reason, outcome && outcome.detail);
       statusEl.textContent = '⚠️ Exemple affiché (pas de lecture réelle) — ' + (reasonLabels[reason] || reason || 'raison inconnue');
       statusEl.style.background = 'var(--accent-2-soft)';
       statusEl.style.color = 'var(--accent-2)';
@@ -918,7 +919,11 @@
 
   function loadHistoryCache(){
     try{
-      var raw = localStorage.getItem('difup_history');
+      var raw = localStorage.getItem('diffup_history');
+      if(!raw){
+        raw = localStorage.getItem('difup_history'); // migration depuis l'ancien nom "Difup"
+        if(raw) localStorage.setItem('diffup_history', raw);
+      }
       return raw ? JSON.parse(raw) : defaultHistory;
     }catch(e){ return defaultHistory; }
   }
@@ -936,7 +941,7 @@
           renderHistory();
         }
       }
-    }).catch(function(e){ console.warn('Difup: history db load failed', e); });
+    }).catch(function(e){ console.warn('Diffup: history db load failed', e); });
   }
 
   async function uploadHeroForHistory(){
@@ -950,7 +955,7 @@
       if(!assets) return null;
       var res = await assets.upload(state.files[0]);
       return (res && res.url) || null;
-    }catch(e){ console.warn('Difup: photo upload for history failed', e); return null; }
+    }catch(e){ console.warn('Diffup: photo upload for history failed', e); return null; }
   }
 
   async function saveHistory(chans){
@@ -976,12 +981,12 @@
 
   function persistHistory(hist){
     historyState = hist;
-    try{ localStorage.setItem('difup_history', JSON.stringify(hist)); }catch(e){}
+    try{ localStorage.setItem('diffup_history', JSON.stringify(hist)); }catch(e){}
     if(window.claude && window.claude.use){
       window.claude.use('db').then(function(db){
         if(!db) return;
         return db.doc('app/history').set({ items: hist });
-      }).catch(function(e){ console.warn('Difup: history db save failed', e); });
+      }).catch(function(e){ console.warn('Diffup: history db save failed', e); });
     }
     renderHistory();
   }
@@ -1082,7 +1087,7 @@
     if(!('serviceWorker' in navigator)) return;
     window.addEventListener('load', function(){
       navigator.serviceWorker.register('service-worker.js').catch(function(e){
-        console.warn('Difup: enregistrement du service worker impossible ici', e);
+        console.warn('Diffup: enregistrement du service worker impossible ici', e);
       });
     });
   }
@@ -1091,7 +1096,7 @@
     if(!/[?&]shared=1/.test(location.search)) return;
     if(!('caches' in window)) return;
     try{
-      var cache = await caches.open('difup-shared-v1');
+      var cache = await caches.open('diffup-shared-v1');
       var metaResp = await cache.match('shared-meta');
       if(!metaResp) return;
       var meta = await metaResp.json();
@@ -1109,7 +1114,7 @@
       history.replaceState(null, '', location.pathname);
       if(files.length){ handleFiles(files); }
     }catch(e){
-      console.warn('Difup: récupération du contenu partagé impossible', e);
+      console.warn('Diffup: récupération du contenu partagé impossible', e);
     }
   }
 

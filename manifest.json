@@ -1,6 +1,6 @@
 {
-  "name": "Difup",
-  "short_name": "Difup",
+  "name": "Diffup",
+  "short_name": "Diffup",
   "description": "Diffusez vos annonces automatiquement sur Facebook, Instagram et votre site internet.",
   "start_url": "./index.html",
   "scope": "./",

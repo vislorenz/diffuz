@@ -1,5 +1,5 @@
-// Difup — service worker : installabilité PWA + réception du partage Android (Web Share Target)
-var SHARE_CACHE = 'difup-shared-v1';
+// Diffup — service worker : installabilité PWA + réception du partage Android (Web Share Target)
+var SHARE_CACHE = 'diffup-shared-v1';
 
 self.addEventListener('install', function(event){
   self.skipWaiting();
@@ -35,7 +35,7 @@ async function handleShare(request){
       }));
     }
   }catch(e){
-    console.error('Difup SW: échec de la réception du partage', e);
+    console.error('Diffup SW: échec de la réception du partage', e);
   }
   return Response.redirect('./index.html?shared=1', 303);
 }
